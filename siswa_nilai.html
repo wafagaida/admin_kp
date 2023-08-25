@@ -142,16 +142,65 @@
                 </div>
 
                 <script>
-                    document.querySelector('#searchForm').addEventListener('submit', function (event) {
-                        event.preventDefault();
+                    function loadSiswaAndNilai(nis) {
 
-                        const nis = document.getElementById('nisInput').value;
 
-                        // Fetch student data
+                        const siswaInfo = document.getElementById('siswaInfo');
+                        const nilaiInfo = document.getElementById('nilaiInfo');
+
+                        // Display loading messages
+                        siswaInfo.innerHTML = `<p class="text-center">Loading biodata...</p>`;
+                        nilaiInfo.innerHTML = `<p class="text-center">Loading nilai...</p>`;
+
+                        // Fetch student biodata from a different API
+                        fetch(`http://127.0.0.1:8000/api/posts/${nis}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const siswaInfo = document.getElementById('siswaInfo');
+                                // Display student biodata
+                                if (data.success && data.data.length > 0) {
+                                    const biodata = data.data[0];
+
+                                    siswaInfo.innerHTML = `
+                    <h3>Biodata Siswa</h3>
+                    <table>
+                        <tr>
+                            <td>NIS</td>
+                            <td>:</td>
+                            <td>${biodata.nis}</td>
+                        </tr>
+                        <tr>
+                            <td>Nama</td>
+                            <td>:</td>
+                            <td>${biodata.nama}</td>
+                        </tr>
+                        <tr>
+                            <td>Jurusan</td>
+                            <td>:</td>
+                            <td>${biodata.jurusan}</td>
+                        </tr>
+                        <tr>
+                            <td>Tahun Masuk</td>
+                            <td>:</td>
+                            <td>${biodata.tahun_masuk}</td>
+                        </tr>
+                        <!-- Add more biodata fields here -->
+                    </table>
+                    <br>
+                `;
+                                } else {
+                                    siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";
+                                }
+                            })
+                            .catch(error => {
+                                siswaInfo.innerHTML = "<p>Error fetching biodata.</p>";
+                                console.error('Error fetching biodata:', error);
+                            });
+
+                        // Fetch student grade data using the same NIS
                         fetch(`http://127.0.0.1:8000/api/nilai/${nis}`)
                             .then(response => response.json())
                             .then(data => {
-
                                 const nilaiPerSemester = {};
                                 data.data.forEach(d => {
                                     const semester = d.semester;
@@ -161,100 +210,288 @@
                                     nilaiPerSemester[semester].push(d);
                                 });
 
-                                const siswaInfo = document.getElementById('siswaInfo');
                                 const nilaiInfo = document.getElementById('nilaiInfo');
 
                                 if (data.success && data.data.length > 0) {
-                                    const siswa = data.data[0].user; // Assuming user info is nested
-                                    const nilai = data.data;
 
-                                    // Display student info
-                                    siswaInfo.innerHTML = `
-                    <h3>Biodata Siswa</h3>
-                    <table>
-                        <tr>
-                            <td>NIS</td>
-                            <td>:</td>
-                            <td>${siswa.nis}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama</td>
-                            <td>:</td>
-                            <td>${siswa.nama}</td>
-                        </tr>
-                        <tr>
-                            <td>Jurusan</td>
-                            <td>:</td>
-                            <td>${siswa.jurusan}</td>
-                        </tr>
-                        <tr>
-                            <td>Tahun Masuk</td>
-                            <td>:</td>
-                            <td>${siswa.tahun_masuk}</td>
-                        </tr>
-                        <!-- Add more student info fields here -->
-                    </table>
-                    <br>
-                    `;
-
-                                    // Display student grade data
                                     nilaiInfo.innerHTML = `
-                    
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            <h1 class="h3 mb-2 text-gray-800">Nilai Siswa </h1>
-            </div>
-                    <div class="card-body">
-                <div class="table-responsive">
-                   <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                <thead>
-                    ${Object.entries(nilaiPerSemester).map(([semester, nilai]) => `
-                        <tr>
-                            <td colspan="6" class="text-center text-gray-800">Semester ${semester}</td>
-                        </tr>
-                    <tr>
-                        <th>No</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Guru</th>
-                        <th>Nilai</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                        ${nilai.map((d, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${d.mapel.nama_mapel}</td>
-                                <td>${d.mapel.nama_guru}</td>
-                                <td>${d.nilai !== null ? d.nilai : '-'}</td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="editData">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-edit"></i>
-                                        </span>
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    `).join('')}
-                </tbody>
-            </table>
-                </div>
-            </div>
-        </div>
-                    `;
+                                                <div class="card shadow mb-4">
+                                                    <div class="card-header py-3">
+                                                        <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                        <span class="icon text-white">
+                                                            <i class="fas fa-plus"></i>
+                                                            </span>
+                                                            <span class="text">Tambah Data</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                                <thead>
+                                                                    <!-- Table header here -->
+                                                                </thead>
+                                                                <tbody>
+                                                                    ${Object.entries(nilaiPerSemester).map(([semester, nilai]) => `
+                                                                        <tr>
+                                                                            <td colspan="4" class="text-center text-gray-800">Semester ${semester}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th>No</th>
+                                                                            <th>Mata Pelajaran</th>
+                                                                            <th>Nilai</th>
+                                                                            <th></th>
+                                                                        </tr>
+                                                                        ${nilai.map((d, index) => `
+                                                                            <tr>
+                                                                                <td>${index + 1}</td>
+                                                                                <td>${d.mapel.nama_mapel}</td>
+                                                                                <td>${d.nilai !== null ? d.nilai : '-'}</td>
+                                                                                <td>
+                                                                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="">
+                                                                                    <span class="icon text-white">
+                                                                                        <i class="fas fa-edit"></i>
+                                                                                    </span>
+                                                                                    </button>
+                                                                                    <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${d.id}')"><span class="icon text-white">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                    </span>
+                                                                                    </button></a>
+                                                                                </td>
+                                                                            </tr>
+                                                                        `).join('')}
+                                                                    `).join('')}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `;
                                 } else {
-                                    siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";
-                                    nilaiInfo.innerHTML = "";
+                                    nilaiInfo.innerHTML = `
+                                                <div class="card shadow mb-4">
+                                                    <div class="card-header py-3">
+                                                        <h1 class="h3 mb-2 text-gray-800">Nilai Siswa</h1>
+                                                        <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                        <span class="icon text-white">
+                                                            <i class="fas fa-plus"></i>
+                                                            </span>
+                                                            <span class="text">Tambah Data</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                                <tr>
+                                                                            <td colspan="4" class="text-center text-gray-800">Data Nilai tidak ditemukan</td>
+                                                                        </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                                
+                                                                `;
                                 }
                             })
                             .catch(error => {
-                                console.error('Error fetching data:', error);
+                                nilaiInfo.innerHTML = "<p>Error fetching grade data.</p>";
+                                console.error('Error fetching grade data:', error);
                             });
+                    };
+
+                    document.querySelector('#searchForm').addEventListener('submit', function (event) {
+                        event.preventDefault();
+
+                        const nis = document.getElementById('nisInput').value;
+
+                        // Memuat data siswa dan nilai sesuai NIS yang dicari
+                        loadSiswaAndNilai(nis);
+
+                        // ... (kode lainnya)
                     });
+
                 </script>
                 <!-- End of Main Content -->
+
+
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Tambah Data Siswa</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form untuk menambah data -->
+                                <form id="addForm" method='post'>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">NIS</label>
+                                            <div class="col-sm-8"><input type="text" name="nis" class="form-control"
+                                                    id="nis" value="" required></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Mapel</label>
+                                            <div class="col-sm-8"><select name="kd_mapel" id="kd_mapel"
+                                                    class="form-control" style="width: 100%;">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Nilai</label>
+                                            <div class="col-sm-8"><input type="text" name="nilai" class="form-control"
+                                                    id="nilai" value="" required></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Semester</label>
+                                            <div class="col-sm-8"><select name="semester" id="semester"
+                                                    class="form-control" style="width: 100%;">
+                                                    <option value="Semester" selected="selected">-- Pilih Satu --
+                                                    </option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                    <option value="6">6</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-sukaraja" onclick="addData()">Tambah Data</button>
+                                        <!-- <button type="submit" class="btn btn-sukaraja">Tambah Data</button> -->
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+
+                    // Fungsi untuk mengisi opsi kd_mapel dengan data dari API
+                    function fillMapelOptions() {
+                        fetch(`http://localhost:8000/api/mapel`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const kdMapelSelect = document.getElementById('kd_mapel');
+
+                                if (data.success && data.data.length > 0) {
+                                    data.data.forEach(mapel => {
+                                        const option = document.createElement('option');
+                                        option.value = mapel.kd_mapel;
+                                        option.textContent = mapel.nama_mapel;
+                                        kdMapelSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const defaultOption = document.createElement('option');
+                                    defaultOption.value = 'Jurusan';
+                                    defaultOption.textContent = '-- Pilih Satu --';
+                                    kdMapelSelect.appendChild(defaultOption);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching mata pelajaran:', error);
+                            });
+                    }
+
+                    // Panggil fungsi untuk mengisi opsi kd_mapel saat halaman dimuat
+                    fillMapelOptions();
+
+                    function addData() {
+                        const addForm = document.getElementById('addForm');
+                        const formData = new FormData(addForm);
+                        const modalBody = document.querySelector('.modal-body');
+
+                        fetch("http://127.0.0.1:8000/api/nilai", {
+                            method: "POST",
+                            body: formData,
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success === true) {
+                                    // Refresh the data
+                                    loadSiswaAndNilai(nis);
+
+                                    // Tampilkan pesan sukses
+                                    const successMessage = document.createElement('div');
+                                    successMessage.classList.add('alert', 'alert-success');
+                                    successMessage.textContent = "Data berhasil ditambahkan!";
+                                    modalBody.appendChild(successMessage);
+
+                                    // Hide the modal after a short delay
+                                    setTimeout(() => {
+                                        $('#addModal').modal('hide');
+                                    }, 1000);
+
+                                    // Remove the success message after a delay
+                                    setTimeout(() => {
+                                        successMessage.remove();
+                                    }, 3000);
+                                } else {
+                                    console.error("Gagal menambah data.");
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error adding data:", error);
+                            });
+                    }
+
+                    function deleteData(id) {
+                        const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
+                        if (confirmation) {
+                            fetch(`http://127.0.0.1:8000/api/nilai/${id}`, {
+                                method: "DELETE",
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success === true) {
+                                        // Refresh the data after successful deletion
+                                        loadSiswaAndNilai(nis);
+
+                                        // Display delete success message
+                                        const deleteMessage = document.createElement('div');
+                                        deleteMessage.classList.add('alert', 'alert-success');
+                                        deleteMessage.textContent = "Data berhasil dihapus!";
+                                        document.body.appendChild(deleteMessage);
+
+                                        // Remove the message after a delay
+                                        setTimeout(() => {
+                                            deleteMessage.remove();
+                                        }, 3000); // Remove after 3 seconds
+                                    } else {
+                                        // Display delete failure message
+                                        const deleteMessage = document.createElement('div');
+                                        deleteMessage.classList.add('alert', 'alert-danger');
+                                        deleteMessage.textContent = "Gagal menghapus data.";
+                                        document.body.appendChild(deleteMessage);
+
+                                        // Remove the message after a delay
+                                        setTimeout(() => {
+                                            deleteMessage.remove();
+                                        }, 3000); // Remove after 3 seconds
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error deleting data:", error);
+                                });
+                        }
+                    }
+                </script>
 
                 <!-- Footer -->
                 <!-- <footer class="sticky-footer bg-white">

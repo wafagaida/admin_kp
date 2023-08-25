@@ -117,36 +117,15 @@
                 <!-- Main Content -->
                 <div class="container-fluid">
                     <form id="searchForm">
-                        <!-- <div class="form-group">
-                            <div class="row">
-                                <h3 class="col-sm-1 form-control bg-light border-0">NIS: </h3>
-                                <div>
-                                    <input type="text" id="nisInput" class="form-control">
-                                </div>
-                                <div class="col-sm">
-                                    <button type="submit" class="btn btn-sukaraja btn-icon-split" name="cari"
-                                        value="Cari Siswa">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-search"></i>
-                                        </span>
-                                        <span class="text">Cari Siswa</span>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div> -->
-
                         <div class="form-group">
                             <div class="row">
                                 <h3 class="col-sm-1 form-control bg-light border-0">Kelas: </h3>
                                 <div class="col-sm">
-                                    <select id="kelasDropdown" class="form-control">
-                                        <!-- Dropdown options will be populated using JavaScript -->
-                                    </select>
+                                    <select id="kelasDropdown" class="form-control"></select>
                                 </div>
                                 <div class="col-sm">
                                     <button type="submit" class="btn btn-sukaraja btn-icon-split" name="cari"
-                                        value="Cari Siswa">
+                                        value="Cari Kelas">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-search"></i>
                                         </span>
@@ -155,145 +134,143 @@
                                 </div>
                             </div>
                         </div>
-
                     </form>
 
                     <div id="siswaInfo"></div>
                     <div id="nilaiInfo"></div>
                 </div>
 
+
                 <script>
-                    // Fetch kelas data
+                    document.addEventListener('DOMContentLoaded', async function () {
+                        const kelasDropdown = document.getElementById('kelasDropdown');
+                        const searchForm = document.getElementById('searchForm');
+                        const siswaInfo = document.getElementById('siswaInfo');
+                        const nilaiInfo = document.getElementById('nilaiInfo');
 
+                        // Fetch daftar kelas
+                        try {
+                            const response = await fetch('http://127.0.0.1:8000/api/kelas');
+                            const data = await response.json();
 
-                    document.querySelector('#searchForm').addEventListener('submit', function (event) {
-                        event.preventDefault();
-
-                        const selectedKelas = document.getElementById('kelasDropdown').value;
-
-                        fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                const kelasDropdown = document.getElementById('kelasDropdown');
-
-                                if (data.success && data.data.length > 0) {
-                                    data.data.forEach(kelas => {
-                                        const option = document.createElement('option');
-                                        option.value = kelas.nama_kelas;
-                                        option.textContent = kelas.nama_kelas;
-                                        kelasDropdown.appendChild(option);
-                                    });
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error fetching kelas data:', error);
-                            });
-
-                        // Fetch student data based on selected kelas
-                        fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`)
-                            .then(response => response.json())
-                            .then(data => {
-
-                                const nilaiPerSemester = {};
-                                data.data.forEach(d => {
-                                    const semester = d.semester;
-                                    if (!nilaiPerSemester[semester]) {
-                                        nilaiPerSemester[semester] = [];
-                                    }
-                                    nilaiPerSemester[semester].push(d);
+                            if (data.success) {
+                                // Populate dropdown with class options
+                                data.data.forEach(kelas => {
+                                    const option = document.createElement('option');
+                                    option.value = kelas.kd_kelas;
+                                    option.textContent = kelas.kd_kelas;
+                                    kelasDropdown.appendChild(option);
                                 });
+                            } else {
+                                console.error('Failed to fetch class data.');
+                            }
+                        } catch (error) {
+                            console.error('Error fetching class data:', error);
+                        }
 
-                                const siswaInfo = document.getElementById('siswaInfo');
-                                const nilaiInfo = document.getElementById('nilaiInfo');
+                        // Event listener when form is submitted
+                        searchForm.addEventListener('submit', async function (event) {
+                            event.preventDefault();
+
+                            const selectedKelas = kelasDropdown.value;
+
+                            nilaiInfo.innerHTML = `<p class="text-center">Loading jadwal pelajaran...</p>`;
+
+                            try {
+                                // Fetch jadwal pelajaran based on selected kd_kelas
+                                const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
+                                const data = await response.json();
 
                                 if (data.success && data.data.length > 0) {
-                                    const siswa = data.data[0].user; // Assuming user info is nested
-                                    const nilai = data.data;
+                                    const kelas = data.data[0].kelas;
+                                    const jadwal = data.data;
 
-                                    // Display student info
+                                    // Display class info
                                     siswaInfo.innerHTML = `
-                    <h3>Biodata Siswa</h3>
-                    <table>
-                        <tr>
-                            <td>NIS</td>
-                            <td>:</td>
-                            <td>${siswa.nis}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama</td>
-                            <td>:</td>
-                            <td>${siswa.nama}</td>
-                        </tr>
-                        <tr>
-                            <td>Jurusan</td>
-                            <td>:</td>
-                            <td>${siswa.jurusan}</td>
-                        </tr>
-                        <tr>
-                            <td>Tahun Masuk</td>
-                            <td>:</td>
-                            <td>${siswa.tahun_masuk}</td>
-                        </tr>
-                        <!-- Add more student info fields here -->
-                    </table>
-                    <br>
-                    `;
+                                        <h3>Jadwal Pelajaran</h3>
+                                        <table>
+                                            <tr>
+                                                <td>Tingkat</td>
+                                                <td>:</td>
+                                                <td>${kelas.tingkat}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Jurusan</td>
+                                                <td>:</td>
+                                                <td>${kelas.jurusan}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Kelas</td>
+                                                <td>:</td>
+                                                <td>${kelas.nama_kelas}</td>
+                                            </tr>
+                                        </table>
+                                        <br>
+                                    `;
 
-                                    // Display student grade data
+                                    // Display jadwal pelajaran data
                                     nilaiInfo.innerHTML = `
-                    
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            <h1 class="h3 mb-2 text-gray-800">Nilai Siswa </h1>
-            </div>
-                    <div class="card-body">
-                <div class="table-responsive">
-                   <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                <thead>
-                    ${Object.entries(nilaiPerSemester).map(([semester, nilai]) => `
-                        <tr>
-                            <td colspan="6" class="text-center text-gray-800">Semester ${semester}</td>
-                        </tr>
-                    <tr>
-                        <th>No</th>
-                        <th>Mata Pelajaran</th>
-                        <th>Guru</th>
-                        <th>Nilai</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                        ${nilai.map((d, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${d.mapel.nama_mapel}</td>
-                                <td>${d.mapel.nama_guru}</td>
-                                <td>${d.nilai !== null ? d.nilai : '-'}</td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="editData">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-edit"></i>
-                                        </span>
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    `).join('')}
-                </tbody>
-            </table>
-                </div>
-            </div>
-        </div>
-                    `;
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                  <span class="icon text-white">
+                                                     <i class="fas fa-plus"></i>
+                                                    </span>
+                                                    <span class="text">Tambah Data</span>
+                                                </button>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>No</th>
+                                                                <th>Hari</th>
+                                                                <th>Jam</th>
+                                                                <th>Kode MaPel</th>
+                                                                <th>Mata Pelajaran</th>
+                                                                <th>Guru</th>
+                                                                <th>Ket</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                           
+                                                            ${jadwal.map((d, index) => `
+                                                                <tr>
+                                                                    <td>${index + 1}</td>
+                                                                    <td>${d.hari}</td>
+                                                                    <td>${d.jam}</td>
+                                                                    <td>${d.mapel.kd_mapel}</td>
+                                                                    <td>${d.mapel.nama_mapel}</td>
+                                                                    <td>${d.mapel.nama_guru}</td>
+                                                                    <td>
+                                                                        <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="">
+                                                                        <span class="icon text-white">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </span>
+                                                                        </button>
+                                                                        <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="return confirm('Yakin dihapus?')"><span class="icon text-white">
+                                                                        <i class="fas fa-trash"></i>
+                                                                        </span>
+                                                                        </button></a>
+                                                                    </td>
+                                                                </tr>
+                                                            `).join('')}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
                                 } else {
-                                    siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";
+                                    siswaInfo.innerHTML = "<p>Data jadwal tidak ditemukan.</p>";
                                     nilaiInfo.innerHTML = "";
                                 }
-                            })
-                            .catch(error => {
+                            } catch (error) {
+                                nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
                                 console.error('Error fetching data:', error);
-                            });
+                            }
+                        });
                     });
                 </script>
                 <!-- End of Main Content -->

@@ -22,6 +22,8 @@
 
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <script src="js/dataSiswa.js"></script>
 </head>
 
 <body id="page-top">
@@ -110,15 +112,14 @@
 
                     <h1 class="h3 mb-0 text-gray-800">Data Siswa SMK Plus Sukaraja</h1>
 
-                    
+
                 </nav>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <!-- Topbar Search -->
-                    <form
-                        class="inline-block form-inline ">
+                    <form class="inline-block form-inline ">
                         <div class="input-group">
                             <input type="text" class="form-control small" placeholder="Search for..."
                                 aria-label="Search" aria-describedby="basic-addon2">
@@ -129,17 +130,19 @@
                             </div>
                         </div>
                     </form>
-                    
-                    <div id="loading" class="text-center" style="display: none;">
-                        <img src="loading.gif" alt="Loading...">
-                    </div>
+
+
 
                     <br>
 
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <button type="button" class="btn btn-sukaraja" data-toggle="modal" data-target="#addModal">
-                                Tambah Data
+                            <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal"
+                                data-target="#addModal" onclick="">
+                                <span class="icon text-white">
+                                    <i class="fas fa-plus"></i>
+                                </span>
+                                <span class="text">Tambah Data</span>
                             </button>
                         </div>
 
@@ -148,9 +151,9 @@
                                 <table class="table table-bordered" id="" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>No.</th>
                                             <th>NIS</th>
                                             <th>Nama</th>
-                                            <th>Username</th>
                                             <th>Jurusan</th>
                                             <th>Tingkat</th>
                                             <th>JK</th>
@@ -162,14 +165,19 @@
                                         </tr>
                                     </thead>
                                     <tbody id="tableBody">
-                                        <!-- This is where the rows will be added -->
+                                        <div id="loading" class="text-center" style="display: none;">
+                                            <img src="loading.gif" alt="Loading...">
+                                        </div>
 
-                                        <script src="js/dataSiswa.js"></script>
+                                        <!-- This is where the rows will be added -->
                                         <script>
-                                            getPosts();
+                                            getPosts(); // Memanggil fungsi getPosts() saat halaman dimuat
+                                            
                                         </script>
 
                                     </tbody>
+
+
                                 </table>
                             </div>
                         </div>
@@ -193,95 +201,137 @@
                         </div>
                         <div class="modal-body">
                             <!-- Form untuk menambah data -->
-                            <form id="addForm" method="post">
+                            <form id="addForm" method='post'>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nis">NIS</label>
+                                        <label class="col-sm-3 control-label text-right">NIS</label>
                                         <div class="col-sm-8"><input type="text" name="nis" class="form-control"
-                                                id="nis" placeholder="NIS" value="" required></div>
+                                                id="nis" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nama">Nama</label>
+                                        <label class="col-sm-3 control-label text-right">Nama</label>
                                         <div class="col-sm-8"><input type="text" name="nama" class="form-control"
-                                                id="nama" placeholder="Nama" value="" required></div>
+                                                id="nama" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="jurusan">Jurusan</label>
-                                        <div class="col-sm-8"><select name="jurusan" class="form-control"
+                                        <label class="col-sm-3 control-label text-right">Username</label>
+                                        <div class="col-sm-8"><input type="text" name="username" class="form-control"
+                                                id="username" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right" for="password">Password</label>
+                                        <div class="col-sm-8"><input type="text" name="password" class="form-control"
+                                                id="password" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Jurusan</label>
+                                        <div class="col-sm-8"><select name="jurusan" id="jurusan" class="form-control"
                                                 style="width: 100%;">
                                                 <option value="Jurusan" selected="selected">-- Pilih Satu --</option>
-                                                <option value="tsm">Teknik Sepeda Motor</option>
-                                                <option value="dkv">Desain Komunikasi Visual</option>
-                                                <option value="farm">Farmasi</option>
+                                                <option value="Teknik Sepeda Motor">Teknik Sepeda Motor</option>
+                                                <option value="Desain Komunikasi Visual">Desain Komunikasi Visual
+                                                </option>
+                                                <option value="Farmasi">Farmasi</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="tingkat">Tingkat</label>
-                                        <div class="col-sm-8"><select name="tingkat" class="form-control"
+                                        <label class="col-sm-3 control-label text-right">Kelas</label>
+                                        <div class="col-sm-8"><select name="kd_kelas" id="kd_kelas" class="form-control"
+                                                style="width: 100%;">
+                                                <option value="Kelas" selected="selected">-- Pilih Satu --</option>
+                                                <option value="xdkv1">xdkv1 - X DKV A</option>
+                                                <option value="xdkv2">xdkv2 - X DKV B</option>
+                                                <option value="xtsm1">xtsm1 - X TSM</option>
+                                                <option value="xfarm1">xfarm1 - X FARM</option>
+                                                <option value="xidkv1">xidkv1 - XI DKV A</option>
+                                                <option value="xidkv2">xidkv2 - XI DKV B</option>
+                                                <option value="xitsm1">xitsm1 - XI TSM</option>
+                                                <option value="xifarm1">xifarm1 - XI FARM A</option>
+                                                <option value="xifarm2">xifarm2 - XI FARM B</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Tingkat</label>
+                                        <div class="col-sm-8"><select name="tingkat" id="tingkat" class="form-control"
                                                 style="width: 100%;">
                                                 <option value="Tingkat" selected="selected">-- Pilih Satu --</option>
-                                                <option value="x">X</option>
-                                                <option value="xi">XI</option>
-                                                <option value="xii">XII</option>
+                                                <option value="X">X</option>
+                                                <option value="XI">XI</option>
+                                                <option value="XII">XII</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="jenis_kelamin">Jenis
+                                        <label class="col-sm-3 control-label text-right">Jenis
                                             Kelamin</label>
-                                        <div class="col-sm-8"><select name="jenis_kelamin" class="form-control"
-                                                style="width: 100%;">
+                                        <div class="col-sm-8"><select name="jenis_kelamin" id="jenis_kelamin"
+                                                class="form-control" style="width: 100%;">
                                                 <option value="Jenis Kelamin" selected="selected">-- Pilih Satu --
                                                 </option>
-                                                <option value="lk">Laki-Laki</option>
-                                                <option value="pr">Perempuan</option>
+                                                <option value="Laki-Laki">Laki-Laki</option>
+                                                <option value="Perempuan">Perempuan</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nik">NIK</label>
+                                        <label class="col-sm-3 control-label text-right">NIK</label>
                                         <div class="col-sm-8"><input type="text" name="nik" class="form-control"
-                                                id="nik" placeholder="NIK" value="" required></div>
+                                                id="nik" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="tanggal_lahir">Tanggal
+                                        <label class="col-sm-3 control-label text-right">Tanggal
                                             Lahir</label>
                                         <div class="col-sm-8"><input type="date" name="tanggal_lahir"
-                                                class="form-control" id="tanggal_lahir" placeholder="Tanggal Lahir"
-                                                value="" required></div>
+                                                class="form-control" id="tanggal_lahir" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="alamat">Alamat</label>
+                                        <label class="col-sm-3 control-label text-right">Alamat</label>
                                         <div class="col-sm-8"><input type="text" name="alamat" class="form-control"
-                                                id="alamat" placeholder="Alamat" value="" required></div>
+                                                id="alamat" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="no_tlp">No Telpon</label>
+                                        <label class="col-sm-3 control-label text-right">No Telpon</label>
                                         <div class="col-sm-8"><input type="text" name="no_tlp" class="form-control"
-                                                id="no_tlp" placeholder="No Telpon" value="" required></div>
+                                                id="no_tlp" value="" required></div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Tahun
+                                            Masuk</label>
+                                        <div class="col-sm-8"><input type="text" name="tahun_masuk" class="form-control"
+                                                id="tahun_masuk" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-sukaraja" onclick="addData()">Tambah Data</button>
+                                    <!-- <button type="submit" class="btn btn-sukaraja">Tambah Data</button> -->
                                 </div>
                             </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-sukaraja" onclick="addData()">Tambah Data</button>
                         </div>
                     </div>
                 </div>
@@ -303,93 +353,134 @@
                             <form id="editForm">
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nis">NIS</label>
+                                        <label class="col-sm-3 control-label text-right">NIS</label>
                                         <div class="col-sm-8"><input type="text" name="nis" class="form-control"
-                                                id="nis" placeholder="NIS" value="" required></div>
+                                                id="nis" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nama">Nama</label>
+                                        <label class="col-sm-3 control-label text-right">Nama</label>
                                         <div class="col-sm-8"><input type="text" name="nama" class="form-control"
-                                                id="nama" placeholder="Nama" value="" required></div>
+                                                id="nama" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="jurusan">Jurusan</label>
-                                        <div class="col-sm-8"><select name="jurusan" class="form-control"
+                                        <label class="col-sm-3 control-label text-right">Username</label>
+                                        <div class="col-sm-8"><input type="text" name="username" class="form-control"
+                                                id="username" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right" for="password">Password</label>
+                                        <div class="col-sm-8"><input type="text" name="password" class="form-control"
+                                                id="password" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Jurusan</label>
+                                        <div class="col-sm-8"><select name="jurusan" id="jurusan" class="form-control"
                                                 style="width: 100%;">
                                                 <option value="Jurusan" selected="selected">-- Pilih Satu --</option>
-                                                <option value="tsm">Teknik Sepeda Motor</option>
-                                                <option value="dkv">Desain Komunikasi Visual</option>
-                                                <option value="farm">Farmasi</option>
+                                                <option value="Teknik Sepeda Motor">Teknik Sepeda Motor</option>
+                                                <option value="Desain Komunikasi Visual">Desain Komunikasi Visual
+                                                </option>
+                                                <option value="Farmasi">Farmasi</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="tingkat">Tingkat</label>
-                                        <div class="col-sm-8"><select name="tingkat" class="form-control"
+                                        <label class="col-sm-3 control-label text-right">Kelas</label>
+                                        <div class="col-sm-8"><select name="kd_kelas" id="kd_kelas" class="form-control"
+                                                style="width: 100%;">
+                                                <option value="Kelas" selected="selected">-- Pilih Satu --</option>
+                                                <option value="xdkv1">xdkv1 - X DKV A</option>
+                                                <option value="xdkv2">xdkv2 - X DKV B</option>
+                                                <option value="xtsm1">xtsm1 - X TSM</option>
+                                                <option value="xfarm1">xfarm1 - X FARM</option>
+                                                <option value="xidkv1">xidkv1 - XI DKV A</option>
+                                                <option value="xidkv2">xidkv2 - XI DKV B</option>
+                                                <option value="xitsm1">xitsm1 - XI TSM</option>
+                                                <option value="xifarm1">xifarm1 - XI FARM A</option>
+                                                <option value="xifarm2">xifarm2 - XI FARM B</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Tingkat</label>
+                                        <div class="col-sm-8"><select name="tingkat" id="tingkat" class="form-control"
                                                 style="width: 100%;">
                                                 <option value="Tingkat" selected="selected">-- Pilih Satu --</option>
-                                                <option value="x">X</option>
-                                                <option value="xi">XI</option>
-                                                <option value="xii">XII</option>
+                                                <option value="X">X</option>
+                                                <option value="XI">XI</option>
+                                                <option value="XII">XII</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="jenis_kelamin">Jenis
+                                        <label class="col-sm-3 control-label text-right">Jenis
                                             Kelamin</label>
-                                        <div class="col-sm-8"><select name="jenis_kelamin" class="form-control"
-                                                style="width: 100%;">
+                                        <div class="col-sm-8"><select name="jenis_kelamin" id="jenis_kelamin"
+                                                class="form-control" style="width: 100%;">
                                                 <option value="Jenis Kelamin" selected="selected">-- Pilih Satu --
                                                 </option>
-                                                <option value="lk">Laki-Laki</option>
-                                                <option value="pr">Perempuan</option>
+                                                <option value="Laki-Laki">Laki-Laki</option>
+                                                <option value="Perempuan">Perempuan</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="nik">NIK</label>
+                                        <label class="col-sm-3 control-label text-right">NIK</label>
                                         <div class="col-sm-8"><input type="text" name="nik" class="form-control"
-                                                id="nik" placeholder="NIK" value="" required></div>
+                                                id="nik" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="tanggal_lahir">Tanggal
+                                        <label class="col-sm-3 control-label text-right">Tanggal
                                             Lahir</label>
                                         <div class="col-sm-8"><input type="date" name="tanggal_lahir"
-                                                class="form-control" id="tanggal_lahir" placeholder="Tanggal Lahir"
-                                                value="" required></div>
+                                                class="form-control" id="tanggal_lahir" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="alamat">Alamat</label>
+                                        <label class="col-sm-3 control-label text-right">Alamat</label>
                                         <div class="col-sm-8"><input type="text" name="alamat" class="form-control"
-                                                id="alamat" placeholder="Alamat" value="" required></div>
+                                                id="alamat" value="" required></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
-                                        <label class="col-sm-3 control-label text-right" for="no_tlp">No Telpon</label>
+                                        <label class="col-sm-3 control-label text-right">No Telpon</label>
                                         <div class="col-sm-8"><input type="text" name="no_tlp" class="form-control"
-                                                id="no_tlp" placeholder="No Telpon" value="" required></div>
+                                                id="no_tlp" value="" required></div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right">Tahun
+                                            Masuk</label>
+                                        <div class="col-sm-8"><input type="text" name="tahun_masuk" class="form-control"
+                                                id="tahun_masuk" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-sukaraja" onclick="editData()">Edit Data</button>
+                                    <!-- <button type="submit" class="btn btn-sukaraja">Tambah Data</button> -->
                                 </div>
                             </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                            <button type="button" class="btn btn-sukaraja" onclick="updateData()">Simpan</button>
                         </div>
                     </div>
                 </div>
@@ -415,8 +506,6 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <script src="js/dataSiswa.js"></script>
 
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>

@@ -148,7 +148,7 @@
                         const nis = document.getElementById('nisInput').value;
 
                         // Fetch student data
-                        fetch(`http://127.0.0.1:8000/api/nilai/${nis}`)
+                        fetch(`http://127.0.0.1:8000/api/bayar/${nis}`)
                             .then(response => response.json())
                             .then(data => {
                                 const siswaInfo = document.getElementById('siswaInfo');
