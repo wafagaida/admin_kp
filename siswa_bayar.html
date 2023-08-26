@@ -22,6 +22,21 @@
 
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <style>
+        .table-bordered th,
+        .table-bordered td {
+            font-size: 12px;
+        }
+
+        #bayar td {
+            font-weight: bold;
+        }
+
+        .form-control {
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -80,7 +95,7 @@
 
             <li class="nav-item active">
                 <a class="nav-link" href="siswa_bayar.html">
-                    <i class="fas fa-dollar-sign fa"></i>
+                    <i class="fas fa-donate fa"></i>
                     <span>Pembayaran</span></a>
             </li>
 
@@ -108,7 +123,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <h1 class="h3 mb-0 text-gray-800">Pembayaran Siswa SMK Plus Sukaraja</h1>
+                    <h1 class="h4 mb-0 text-gray-800">Pembayaran Siswa</h1>
 
                 </nav>
 
@@ -116,166 +131,473 @@
 
                 <!-- Main Content -->
                 <div class="container-fluid">
-                    <form id="searchForm">
-                        <div class="form-group">
-                            <div class="row">
-                                <h3 class="col-sm-1 form-control bg-light border-0">NIS: </h3>
-                                <div>
-                                    <input type="text" id="nisInput" class="form-control">
-                                </div>
-                                <div class="col-sm">
-                                    <button type="submit" class="btn btn-sukaraja btn-icon-split" name="cari"
-                                        value="Cari Siswa">
-                                        <span class="icon text-white-50">
-                                            <i class="fas fa-search"></i>
-                                        </span>
-                                        <span class="text">Cari Siswa</span>
-                                    </button>
-                                </div>
 
+                    <form id="searchForm" class="inline-block form-inline ">
+                        <div class="form-group">
+                            <div>
+                                <input type="text" id="nisInput" placeholder="Masukkan NIS" class="form-control">
+                            </div>
+                            <div class="col-sm">
+                                <button type="submit" class="btn btn-sukaraja btn-icon-split btn-sm" name="cari"
+                                    value="Cari Siswa">
+                                    <span class="icon text-white">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <span class="text">Cari Siswa</span>
                             </div>
                         </div>
                     </form>
+                    <br>
 
                     <div id="siswaInfo"></div>
                     <div id="tagihanInfo"></div>
                 </div>
 
                 <script>
+
+                    function loadData() {
+                        const nis = document.getElementById('nisInput').value;
+                        loadSiswaAndBayar(nis);
+                    }
+
+                    // Event listener untuk submit formulir pencarian
+                    document.querySelector('#searchForm').addEventListener('submit', function (event) {
+                        event.preventDefault();
+                        loadData();
+                    });
+
+                    // Event listener untuk tombol cari
+                    document.querySelector('#searchForm button[type="submit"]').addEventListener('click', function (event) {
+                        event.preventDefault();
+                        loadData();
+                    });
+
+                    function loadSiswaAndBayar(nis) {
+
+
+                        const siswaInfo = document.getElementById('siswaInfo');
+                        const tagihanInfo = document.getElementById('tagihanInfo');
+
+                        // Display loading messages
+                        siswaInfo.innerHTML = `<p class="text-center">Loading biodata...</p>`;
+                        tagihanInfo.innerHTML = `<p class="text-center">Loading data pembayaran...</p>`;
+
+                        // Fetch student biodata from a different API
+                        fetch(`http://127.0.0.1:8000/api/posts/${nis}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const siswaInfo = document.getElementById('siswaInfo');
+                                // Display student biodata
+                                if (data.success && data.data.length > 0) {
+                                    const biodata = data.data[0];
+
+                                    siswaInfo.innerHTML = `
+                <h5>Biodata Siswa</h5>
+                <table table class="table table-bordered" id="bayar" width="100%" cellspacing="0">
+                    <tr>
+                        <td>NIS</td>
+                        <td>${biodata.nis}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama</td>
+                        <td>${biodata.nama}</td>
+                    </tr>
+                    <tr>
+                        <td>Jurusan</td>
+                        <td>${biodata.jurusan}</td>
+                    </tr>
+                    <tr>
+                        <td>Kelas</td>
+                        <td>${biodata.kelas.nama_kelas}</td>
+                    </tr>
+                    <tr>
+                        <td>Tahun Masuk</td>
+                        <td>${biodata.tahun_masuk}</td>
+                    </tr>
+                </table>
+                <br>
+                `;
+                                } else {
+                                    siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";
+                                }
+                            })
+                            .catch(error => {
+                                siswaInfo.innerHTML = "<p>Error fetching biodata.</p>";
+                                console.error('Error fetching biodata:', error);
+                            });
+
+                        // Fetch student grade data using the same NIS
+                        fetch(`http://127.0.0.1:8000/api/bayar/${nis}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const bayarPerSemester = {};
+                                data.data.forEach(d => {
+                                    const semester = d.semester;
+                                    if (!bayarPerSemester[semester]) {
+                                        bayarPerSemester[semester] = [];
+                                    }
+                                    bayarPerSemester[semester].push(d);
+                                });
+
+                                const tagihanInfo = document.getElementById('tagihanInfo');
+
+                                if (data.success && data.data.length > 0) {
+
+                                    tagihanInfo.innerHTML = `
+                                            <div class="card shadow mb-4">
+                                                <div class="card-header py-3">
+                                                    <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                    <span class="icon text-white">
+                                                        <i class="fas fa-plus"></i>
+                                                        </span>
+                                                        <span class="text">Tambah Data</span>
+                                                    </button>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                            ${Object.entries(bayarPerSemester).map(([semester, bayar]) => `
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td colspan="8" class="text-center text-gray-800">Semester ${semester}</td>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th>No</th>
+                                                                        <th>Pembayaran</th>
+                                                                        <th>Bulan</th>
+                                                                        <th>Nominal Pembayaran</th>
+                                                                        <th>Jumlah Bayar</th>
+                                                                        <th>Tanggal Bayar</th>
+                                                                        <th>Keterangan</th>
+                                                                        <th></th>
+                                                                    </tr>
+                                                                    ${bayar.map((d, index) => `
+                                                                        <tr>
+                                                                            <td>${index + 1}</td>
+                                                                            <td>${d.nama_bayar}</td>
+                                                                            <td>${d.bulan}</td>
+                                                                            <td>${d.nominal}</td>
+                                                                            <td>${d.jumlah_bayar !== null ? d.jumlah_bayar : '-'}</td>
+                                                                            <td>${d.tgl_bayar !== null ? d.tgl_bayar : '-'}</td>
+                                                                            <td>${d.ket !== null ? d.ket : '-'}</td>
+                                                                            <td>
+                                                                                <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id="${d.id}">
+                                                                                    <span class="icon text-white">
+                                                                                        <i class="fas fa-edit"></i>
+                                                                                    </span>
+                                                                                </button>
+                                                                                <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${d.id}')">
+                                                                                    <span class="icon text-white">
+                                                                                        <i class="fas fa-trash"></i>
+                                                                                    </span>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                        `).join('')}
+                                                                    `).join('')}
+                                                                </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `;
+                                } else {
+                                    tagihanInfo.innerHTML = `
+                                            <div class="card shadow mb-4">
+                                                <div class="card-header py-3">
+                                                    <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                    <span class="icon text-white">
+                                                        <i class="fas fa-plus"></i>
+                                                        </span>
+                                                        <span class="text">Tambah Data</span>
+                                                    </button>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                            <tr>
+                                                                        <td colspan="4" class="text-center text-gray-800">Data Pembayaran tidak ditemukan</td>
+                                                                    </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                            
+                                                            `;
+                                }
+                            })
+                            .catch(error => {
+                                tagihanInfo.innerHTML = "<p>Error fetching grade data.</p>";
+                                console.error('Error fetching grade data:', error);
+                            });
+                    };
+
                     document.querySelector('#searchForm').addEventListener('submit', function (event) {
                         event.preventDefault();
 
                         const nis = document.getElementById('nisInput').value;
 
-                        // Fetch student data
-                        fetch(`http://127.0.0.1:8000/api/bayar/${nis}`)
+                        loadSiswaAndBayar(nis);
+
+                    });
+
+                    // Fungsi untuk mengisi opsi kd_mapel dengan data dari API
+                    function fillMapelOptions() {
+                        fetch(`http://localhost:8000/api/mapel`)
                             .then(response => response.json())
                             .then(data => {
-                                const siswaInfo = document.getElementById('siswaInfo');
-                                const tagihanInfo = document.getElementById('tagihanInfo');
+                                const kdMapelSelect = document.getElementById('kd_mapel');
+
                                 if (data.success && data.data.length > 0) {
-                                    const siswa = data.data[0].user; // Assuming user info is nested
-                                    const nilai = data.data;
-
-                                    // Display student info
-                                    siswaInfo.innerHTML = `
-                    <h3>Biodata Siswa</h3>
-                    <table>
-                        <tr>
-                            <td>NIS</td>
-                            <td>:</td>
-                            <td>${siswa.nis}</td>
-                        </tr>
-                        <tr>
-                            <td>Nama</td>
-                            <td>:</td>
-                            <td>${siswa.nama}</td>
-                        </tr>
-                        <tr>
-                            <td>Jurusan</td>
-                            <td>:</td>
-                            <td>${siswa.jurusan}</td>
-                        </tr>
-                        <tr>
-                            <td>Tahun Masuk</td>
-                            <td>:</td>
-                            <td>${siswa.tahun_masuk}</td>
-                        </tr>
-                        <!-- Add more student info fields here -->
-                    </table>
-                    <br>
-                    `;
-
-                                    // Display student grade data
-                                    tagihanInfo.innerHTML = `
-                    
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-            <h1 class="h3 mb-2 text-gray-800">Tagihan Siswa </h1>
-            </div>
-                    <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                        <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Bulan</th>
-                            <th>Tanggal Bayar</th>
-                            <th>Jumlah</th>
-                            <th>Keterangan</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        ${nilai.map((d, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${d.semester}</td>
-                                <td>${d.mapel.nama_mapel}</td>
-                                <td>${d.mapel.nama_guru}</td>
-                                <td>${d.nilai !== null ? d.nilai : '-'}</td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="editData">
-                                        <span class="icon text-white-50">
-                                        <i class="fas fa-edit"></i>
-                                        </span>
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </table>
-                </div>
-            </div>
-        </div>
-                    `;
+                                    data.data.forEach(mapel => {
+                                        const option = document.createElement('option');
+                                        option.value = mapel.kd_mapel;
+                                        option.textContent = mapel.nama_mapel;
+                                        kdMapelSelect.appendChild(option);
+                                    });
                                 } else {
-                                    siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";
-                                    tagihanInfo.innerHTML = "";
+                                    const defaultOption = document.createElement('option');
+                                    defaultOption.value = 'Jurusan';
+                                    defaultOption.textContent = '-- Pilih Satu --';
+                                    kdMapelSelect.appendChild(defaultOption);
                                 }
                             })
                             .catch(error => {
-                                console.error('Error fetching data:', error);
+                                console.error('Error fetching mata pelajaran:', error);
                             });
-                    });
-                </script>
-                <!-- End of Main Content -->
+                    }
 
-                <!-- Footer -->
-                <!-- <footer class="sticky-footer bg-white">
+                    fillMapelOptions();
+
+                    function fillEditMapelOptions() {
+                        fetch(`http://localhost:8000/api/mapel`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const kdMapelSelect = document.getElementById('kd_mapel_edit');
+
+                                if (data.success && data.data.length > 0) {
+                                    data.data.forEach(mapel => {
+                                        const option = document.createElement('option');
+                                        option.value = mapel.kd_mapel;
+                                        option.textContent = mapel.nama_mapel;
+                                        kdMapelSelect.appendChild(option);
+                                    });
+                                } else {
+                                    const defaultOption = document.createElement('option');
+                                    defaultOption.value = 'Jurusan';
+                                    defaultOption.textContent = '-- Pilih Satu --';
+                                    kdMapelSelect.appendChild(defaultOption);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching mata pelajaran:', error);
+                            });
+                    }
+
+                    // Panggil fungsi untuk mengisi opsi kd_mapel_edit saat halaman dimuat
+                    fillEditMapelOptions();
+
+                    function addData() {
+                        const addForm = document.getElementById('addForm');
+                        const formData = new FormData(addForm);
+                        const modalBody = document.querySelector('.modal-body');
+
+                        fetch("http://127.0.0.1:8000/api/bayar", {
+                            method: "POST",
+                            body: formData,
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success === true) {
+                                    // Refresh the data
+                                    loadData()
+
+                                    // Tampilkan pesan sukses
+                                    const successMessage = document.createElement('div');
+                                    successMessage.classList.add('alert', 'alert-success');
+                                    successMessage.textContent = "Data berhasil ditambahkan!";
+                                    modalBody.appendChild(successMessage);
+
+                                    // Hide the modal after a short delay
+                                    setTimeout(() => {
+                                        $('#addModal').modal('hide');
+                                    }, 1200);
+
+                                    // Remove the success message after a delay
+                                    setTimeout(() => {
+                                        successMessage.remove();
+                                    }, 1200);
+                                } else {
+                                    console.error("Gagal menambah data.");
+
+                                    const successMessage = document.createElement('div');
+                                    successMessage.classList.add('alert', 'alert-error');
+                                    successMessage.textContent = "Data gagal ditambahkan!";
+                                    modalBody.appendChild(successMessage);
+
+                                    setTimeout(() => {
+                                        successMessage.remove();
+                                    }, 1200);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error adding data:", error);
+                            });
+                    }
+
+                    function editData(event) {
+                        const editForm = document.getElementById('editForm');
+                        const formData = new FormData(editForm);
+                        const modalBody = document.querySelector('.modal-body');
+
+                        const id = event.target.getAttribute('data-id');
+
+                        fetch(`http://127.0.0.1:8000/api/bayar/${id}`, {
+                            method: 'PUT',
+                            body: JSON.stringify(Object.fromEntries(formData)),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! Status: ${response.url}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success === true) {
+                                    console.log('Success:', data);
+
+                                    const successMessage = document.createElement('div');
+                                    successMessage.classList.add('alert', 'alert-success');
+                                    successMessage.textContent = "Data berhasil diubah!";
+                                    modalBody.appendChild(successMessage);
+
+                                    loadData()
+
+                                    setTimeout(() => {
+                                        $('#editModal').modal('hide');
+                                        successMessage.remove();
+                                    }, 1200);
+
+                                } else {
+                                    console.error("Gagal mengedit data.");
+
+                                    const successMessage = document.createElement('div');
+                                    successMessage.classList.add('alert', 'alert-danger');
+                                    successMessage.textContent = "Data gagal ditambahkan!";
+                                    modalBody.appendChild(successMessage);
+
+                                    setTimeout(() => {
+                                        successMessage.remove();
+                                    }, 1200);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error editing data:', error);
+
+                                const errorMessage = document.createElement('div');
+                                errorMessage.classList.add('alert', 'alert-danger');
+                                errorMessage.textContent = "Error mengedit data!";
+                                modalBody.appendChild(errorMessage);
+
+                                setTimeout(() => {
+                                    errorMessage.remove();
+                                }, 1200);
+                            });
+                    }
+
+                    function deleteData(id) {
+                        const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
+                        if (confirmation) {
+                            fetch(`http://127.0.0.1:8000/api/bayar/${id}`, {
+                                method: "DELETE",
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success === true) {
+                                        // Refresh the data after successful deletion
+                                        loadData()
+
+                                        // Display delete success message
+                                        const deleteMessage = document.createElement('div');
+                                        deleteMessage.classList.add('alert', 'alert-success');
+                                        deleteMessage.textContent = "Data berhasil dihapus!";
+                                        document.body.appendChild(deleteMessage);
+
+                                        // Remove the message after a delay
+                                        setTimeout(() => {
+                                            deleteMessage.remove();
+                                        }, 1200); // Remove after 3 seconds
+                                    } else {
+                                        // Display delete failure message
+                                        const deleteMessage = document.createElement('div');
+                                        deleteMessage.classList.add('alert', 'alert-danger');
+                                        deleteMessage.textContent = "Gagal menghapus data.";
+                                        document.body.appendChild(deleteMessage);
+
+                                        // Remove the message after a delay
+                                        setTimeout(() => {
+                                            deleteMessage.remove();
+                                        }, 1200); // Remove after 3 seconds
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error deleting data:", error);
+                                });
+                        }
+                    }
+
+                </script>
+            </div>
+
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
                     <div class="container my-auto">
                         <div class="copyright text-center my-auto">
                             <span>Copyright &copy; Sistem Informasi Siswa SMK Plus Sukaraja 2023</span>
                         </div>
                     </div>
-                </footer> -->
-                <!-- End of Footer -->
-
-            </div>
-            <!-- End of Content Wrapper -->
+                </footer>
+            <!-- End of Footer -->
 
         </div>
-        <!-- End of Page Wrapper -->
+        <!-- End of Content Wrapper -->
 
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up"></i>
-        </a>
+    </div>
+    <!-- End of Page Wrapper -->
 
-        <!-- Bootstrap core JavaScript-->
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
 
-        <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-        <!-- Page level plugins -->
-        <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-        <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
 
-        <!-- Page level custom scripts -->
-        <script src="js/demo/datatables-demo.js"></script>
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
     </div>
 
 </body>

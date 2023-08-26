@@ -22,6 +22,21 @@
 
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <style>
+        .table-bordered th,
+        .table-bordered td {
+            font-size: 12px;
+        }
+
+        #jadwal td {
+            font-weight: bold;
+        }
+
+        .form-control {
+            font-size: 12px;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -80,7 +95,7 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="siswa_bayar.html">
-                    <i class="fas fa-dollar-sign fa"></i>
+                    <i class="fas fa-donate fa"></i>
                     <span>Pembayaran</span></a>
             </li>
 
@@ -108,7 +123,7 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <h1 class="h3 mb-0 text-gray-800">Jadwal Mapel Siswa SMK Plus Sukaraja</h1>
+                    <h1 class="h4 mb-0 text-gray-800">Jadwal Pelajaran</h1>
 
                 </nav>
 
@@ -119,14 +134,16 @@
                     <form id="searchForm">
                         <div class="form-group">
                             <div class="row">
-                                <h3 class="col-sm-1 form-control bg-light border-0">Kelas: </h3>
+                                <!-- <h3 class="col-sm-1 form-control bg-light border-0">Kelas: </h3> -->
                                 <div class="col-sm">
-                                    <select id="kelasDropdown" class="form-control"></select>
+                                    <select id="kelasDropdown" class="form-control">
+                                        <option value="Kelas" selected="selected">-- Pilih Kelas --</option>
+                                    </select>
                                 </div>
                                 <div class="col-sm">
-                                    <button type="submit" class="btn btn-sukaraja btn-icon-split" name="cari"
+                                    <button type="submit" class="btn btn-sukaraja btn-icon-split btn-sm" name="cari"
                                         value="Cari Kelas">
-                                        <span class="icon text-white-50">
+                                        <span class="icon text-white">
                                             <i class="fas fa-search"></i>
                                         </span>
                                         <span class="text">Cari Kelas</span>
@@ -138,85 +155,82 @@
 
                     <div id="siswaInfo"></div>
                     <div id="nilaiInfo"></div>
-                </div>
 
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', async function () {
-                        const kelasDropdown = document.getElementById('kelasDropdown');
-                        const searchForm = document.getElementById('searchForm');
-                        const siswaInfo = document.getElementById('siswaInfo');
-                        const nilaiInfo = document.getElementById('nilaiInfo');
 
-                        // Fetch daftar kelas
-                        try {
-                            const response = await fetch('http://127.0.0.1:8000/api/kelas');
-                            const data = await response.json();
+                    <script>
+                        document.addEventListener('DOMContentLoaded', async function () {
+                            const kelasDropdown = document.getElementById('kelasDropdown');
+                            const searchForm = document.getElementById('searchForm');
+                            const siswaInfo = document.getElementById('siswaInfo');
+                            const nilaiInfo = document.getElementById('nilaiInfo');
 
-                            if (data.success) {
-                                // Populate dropdown with class options
-                                data.data.forEach(kelas => {
-                                    const option = document.createElement('option');
-                                    option.value = kelas.kd_kelas;
-                                    option.textContent = kelas.kd_kelas;
-                                    kelasDropdown.appendChild(option);
-                                });
-                            } else {
-                                console.error('Failed to fetch class data.');
-                            }
-                        } catch (error) {
-                            console.error('Error fetching class data:', error);
-                        }
-
-                        // Event listener when form is submitted
-                        searchForm.addEventListener('submit', async function (event) {
-                            event.preventDefault();
-
-                            const selectedKelas = kelasDropdown.value;
-
-                            nilaiInfo.innerHTML = `<p class="text-center">Loading jadwal pelajaran...</p>`;
-
+                            // Fetch daftar kelas
                             try {
-                                // Fetch jadwal pelajaran based on selected kd_kelas
-                                const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
+                                const response = await fetch('http://127.0.0.1:8000/api/kelas');
                                 const data = await response.json();
 
-                                if (data.success && data.data.length > 0) {
-                                    const kelas = data.data[0].kelas;
-                                    const jadwal = data.data;
+                                if (data.success) {
+                                    // Populate dropdown with class options
+                                    data.data.forEach(kelas => {
+                                        const option = document.createElement('option');
+                                        option.value = kelas.kd_kelas;
+                                        option.textContent = kelas.kd_kelas;
+                                        kelasDropdown.appendChild(option);
+                                    });
+                                } else {
+                                    console.error('Failed to fetch class data.');
+                                }
+                            } catch (error) {
+                                console.error('Error fetching class data:', error);
+                            }
 
-                                    // Display class info
-                                    siswaInfo.innerHTML = `
-                                        <h3>Jadwal Pelajaran</h3>
-                                        <table>
+                            // Event listener when form is submitted
+                            searchForm.addEventListener('submit', async function (event) {
+                                event.preventDefault();
+
+                                const selectedKelas = kelasDropdown.value;
+
+                                nilaiInfo.innerHTML = `<p class="text-center">Loading jadwal pelajaran...</p>`;
+
+                                try {
+                                    // Fetch jadwal pelajaran based on selected kd_kelas
+                                    const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
+                                    const data = await response.json();
+
+                                    if (data.success && data.data.length > 0) {
+                                        const kelas = data.data[0].kelas;
+                                        const jadwal = data.data;
+
+                                        // Display class info
+                                        siswaInfo.innerHTML = `
+                                    <h5>Detail Kelas</h5>
+                                        <table class="table table-bordered" id="jadwal" width="100%" cellspacing="0">
                                             <tr>
                                                 <td>Tingkat</td>
-                                                <td>:</td>
                                                 <td>${kelas.tingkat}</td>
                                             </tr>
                                             <tr>
                                                 <td>Jurusan</td>
-                                                <td>:</td>
                                                 <td>${kelas.jurusan}</td>
                                             </tr>
                                             <tr>
                                                 <td>Kelas</td>
-                                                <td>:</td>
                                                 <td>${kelas.nama_kelas}</td>
                                             </tr>
                                         </table>
                                         <br>
                                     `;
 
-                                    // Display jadwal pelajaran data
-                                    nilaiInfo.innerHTML = `
+                                        // Display jadwal pelajaran data
+                                        nilaiInfo.innerHTML = `
                                         <div class="card shadow mb-4">
                                             <div class="card-header py-3">
                                                 <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
                                                   <span class="icon text-white">
                                                      <i class="fas fa-plus"></i>
                                                     </span>
-                                                    <span class="text">Tambah Data</span>
+                                                    <span class="text">Tambah Jadwal</span>
                                                 </button>
                                             </div>
                                             <div class="card-body">
@@ -230,7 +244,7 @@
                                                                 <th>Kode MaPel</th>
                                                                 <th>Mata Pelajaran</th>
                                                                 <th>Guru</th>
-                                                                <th>Ket</th>
+                                                                <th></th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -244,15 +258,16 @@
                                                                     <td>${d.mapel.nama_mapel}</td>
                                                                     <td>${d.mapel.nama_guru}</td>
                                                                     <td>
-                                                                        <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="">
-                                                                        <span class="icon text-white">
-                                                                            <i class="fas fa-edit"></i>
-                                                                        </span>
+                                                                        <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id="${d.id}">
+                                                                            <span class="icon text-white">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </span>
                                                                         </button>
-                                                                        <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="return confirm('Yakin dihapus?')"><span class="icon text-white">
-                                                                        <i class="fas fa-trash"></i>
-                                                                        </span>
-                                                                        </button></a>
+                                                                        <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${d.id}')">
+                                                                             <span class="icon text-white">
+                                                                                <i class="fas fa-trash"></i>
+                                                                            </span>
+                                                                        </a>
                                                                     </td>
                                                                 </tr>
                                                             `).join('')}
@@ -262,57 +277,368 @@
                                             </div>
                                         </div>
                                     `;
-                                } else {
-                                    siswaInfo.innerHTML = "<p>Data jadwal tidak ditemukan.</p>";
-                                    nilaiInfo.innerHTML = "";
+                                    } else {
+                                        siswaInfo.innerHTML = "<p>Data jadwal tidak ditemukan.</p>";
+                                        nilaiInfo.innerHTML = "";
+                                    }
+                                } catch (error) {
+                                    nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
+                                    console.error('Error fetching data:', error);
                                 }
-                            } catch (error) {
-                                nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
-                                console.error('Error fetching data:', error);
-                            }
+                            });
                         });
-                    });
-                </script>
+
+                        function fillMapelOptions() {
+                            fetch(`http://localhost:8000/api/mapel`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const kdMapelSelect = document.getElementById('kd_mapel');
+
+                                    if (data.success && data.data.length > 0) {
+                                        data.data.forEach(mapel => {
+                                            const option = document.createElement('option');
+                                            option.value = mapel.kd_mapel;
+                                            option.textContent = mapel.nama_mapel;
+                                            kdMapelSelect.appendChild(option);
+                                        });
+                                    } else {
+                                        const defaultOption = document.createElement('option');
+                                        defaultOption.value = 'Jurusan';
+                                        defaultOption.textContent = '-- Pilih Satu --';
+                                        kdMapelSelect.appendChild(defaultOption);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching mata pelajaran:', error);
+                                });
+                        }
+
+                        fillMapelOptions();
+
+                        function fillEditMapelOptions() {
+                            fetch(`http://localhost:8000/api/mapel`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    const kdMapelSelect = document.getElementById('kd_mapel_edit');
+
+                                    if (data.success && data.data.length > 0) {
+                                        data.data.forEach(mapel => {
+                                            const option = document.createElement('option');
+                                            option.value = mapel.kd_mapel;
+                                            option.textContent = mapel.nama_mapel;
+                                            kdMapelSelect.appendChild(option);
+                                        });
+                                    } else {
+                                        const defaultOption = document.createElement('option');
+                                        defaultOption.value = 'Jurusan';
+                                        defaultOption.textContent = '-- Pilih Satu --';
+                                        kdMapelSelect.appendChild(defaultOption);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching mata pelajaran:', error);
+                                });
+                        }
+
+                        // Panggil fungsi untuk mengisi opsi kd_mapel_edit saat halaman dimuat
+                        fillEditMapelOptions();
+
+                        function addData() {
+                            const addForm = document.getElementById('addForm');
+                            const formData = new FormData(addForm);
+                            const modalBody = document.querySelector('.modal-body');
+
+                            fetch("http://127.0.0.1:8000/api/jadwal", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! Status: ${response.status}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    if (data.success === true) {
+                                        // Refresh the data
+                                        // loadData()
+
+                                        // Tampilkan pesan sukses
+                                        const successMessage = document.createElement('div');
+                                        successMessage.classList.add('alert', 'alert-success');
+                                        successMessage.textContent = "Data berhasil ditambahkan!";
+                                        modalBody.appendChild(successMessage);
+
+                                        // Hide the modal after a short delay
+                                        setTimeout(() => {
+                                            $('#addModal').modal('hide');
+                                        }, 1200);
+
+                                        // Remove the success message after a delay
+                                        setTimeout(() => {
+                                            successMessage.remove();
+                                        }, 1200);
+                                    } else {
+                                        console.error("Gagal menambah data.");
+
+                                        const successMessage = document.createElement('div');
+                                        successMessage.classList.add('alert', 'alert-error');
+                                        successMessage.textContent = "Data gagal ditambahkan!";
+                                        modalBody.appendChild(successMessage);
+
+                                        setTimeout(() => {
+                                            successMessage.remove();
+                                        }, 1200);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error adding data:", error);
+                                });
+                        }
+
+                        function deleteData(id) {
+                            const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
+                            if (confirmation) {
+                                fetch(`http://127.0.0.1:8000/api/jadwal/${id}`, {
+                                    method: "DELETE",
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success === true) {
+                                            // Refresh the data after successful deletion
+                                            // loadData()
+
+                                            // Display delete success message
+                                            const deleteMessage = document.createElement('div');
+                                            deleteMessage.classList.add('alert', 'alert-success');
+                                            deleteMessage.textContent = "Data berhasil dihapus!";
+                                            document.body.appendChild(deleteMessage);
+
+                                            // Remove the message after a delay
+                                            setTimeout(() => {
+                                                deleteMessage.remove();
+                                            }, 1200); // Remove after 3 seconds
+                                        } else {
+                                            // Display delete failure message
+                                            const deleteMessage = document.createElement('div');
+                                            deleteMessage.classList.add('alert', 'alert-danger');
+                                            deleteMessage.textContent = "Gagal menghapus data.";
+                                            document.body.appendChild(deleteMessage);
+
+                                            // Remove the message after a delay
+                                            setTimeout(() => {
+                                                deleteMessage.remove();
+                                            }, 1200); // Remove after 3 seconds
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Error deleting data:", error);
+                                    });
+                            }
+                        }
+                    </script>
+                </div>
+
                 <!-- End of Main Content -->
 
-                <!-- Footer -->
-                <!-- <footer class="sticky-footer bg-white">
-                    <div class="container my-auto">
-                        <div class="copyright text-center my-auto">
-                            <span>Copyright &copy; Sistem Informasi Siswa SMK Plus Sukaraja 2023</span>
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Tambah Data Nilai</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form untuk menambah data -->
+                                <form id="addForm" method='post'>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Mapel</label>
+                                            <div class="col-sm-8">
+                                                <select name="kd_mapel" id="kd_mapel" class="form-control"
+                                                    style="width: 100%;">
+                                                    <option value="Kelas" selected="selected">-- Pilih Satu --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right"
+                                                for="tingkat">Tingkat</label>
+                                            <div class="col-sm-8"><select name="tingkat" id="tingkat"
+                                                    class="form-control" style="width: 100%;">
+                                                    <option value="Tingkat" selected="selected">-- Pilih Satu --
+                                                    </option>
+                                                    <option value="X">X</option>
+                                                    <option value="XI">XI</option>
+                                                    <option value="XII">XII</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right" for="kelas">Kelas</label>
+                                            <div class="col-sm-8"><select name="kd_kelas" id="kd_kelas"
+                                                    class="form-control" style="width: 100%;">
+                                                    <option value="Kelas" selected="selected">-- Pilih Satu --</option>
+                                                    <option value="xtsm1">X TSM</option>
+                                                    <option value="xdkv1">X DKV A</option>
+                                                    <option value="xdkv2">X DKV B</option>
+                                                    <option value="xfarm1">X FARM</option>
+                                                    <option value="xitsm1">XI TSM</option>
+                                                    <option value="xidkv1">XI DKV A</option>
+                                                    <option value="xidkv2">XI DKV B</option>
+                                                    <option value="xifarm1">XI FARM A</option>
+                                                    <option value="xifarm2">XI FARM B</option>
+                                                    <option value="xiitsm1">XII TSM</option>
+                                                    <option value="xiidkv1">XII DKV A</option>
+                                                    <option value="xiidkv2">XII DKV B</option>
+                                                    <option value="xiifarm1">XII FARM A</option>
+                                                    <option value="xiifarm2">XII FARM B</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Hari</label>
+                                            <div class="col-sm-8"><select name="hari" id="hari" class="form-control"
+                                                    style="width: 100%;">
+                                                    <option value="Hari" selected="selected">-- Pilih Satu --
+                                                    </option>
+                                                    <option value="Senin">Senin</option>
+                                                    <option value="Selasa">Selasa</option>
+                                                    <option value="Rabu">Rabu</option>
+                                                    <option value="Kamis">Kamis</option>
+                                                    <option value="Jum'at">Jum'at</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Jam</label>
+                                            <div class="col-sm-8"><input type="text" name="jam" class="form-control"
+                                                    id="jam" value="" required></div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sukaraja" onclick="addData()">Tambah
+                                            Data</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </footer> -->
-                <!-- End of Footer -->
+                </div>
 
+                <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Edit Data Nilai</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Form untuk mengedit data -->
+                                <form id="editForm" method='post'>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">NIS</label>
+                                            <div class="col-sm-8"><input type="text" name="nis" class="form-control"
+                                                    id="nis" value="" required></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Mapel</label>
+                                            <div class="col-sm-8"><select name="kd_mapel" id="kd_mapel_edit"
+                                                    class="form-control" style="width: 100%;">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Nilai</label>
+                                            <div class="col-sm-8"><input type="text" name="nilai" class="form-control"
+                                                    id="nilai" value="" required></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Semester</label>
+                                            <div class="col-sm-8"><select name="semester" id="semester"
+                                                    class="form-control" style="width: 100%;">
+                                                    <option value="Semester" selected="selected">-- Pilih Satu --
+                                                    </option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                    <option value="6">6</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sukaraja" onclick="editData(event)">Edit
+                                            Data</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- End of Content Wrapper -->
+
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Sistem Informasi Siswa SMK Plus Sukaraja 2023</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
 
         </div>
-        <!-- End of Page Wrapper -->
-
-        <!-- Scroll to Top Button-->
-        <a class="scroll-to-top rounded" href="#page-top">
-            <i class="fas fa-angle-up"></i>
-        </a>
-
-        <!-- Bootstrap core JavaScript-->
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-        <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js"></script>
-
-        <!-- Page level plugins -->
-        <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-        <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-        <!-- Page level custom scripts -->
-        <script src="js/demo/datatables-demo.js"></script>
+        <!-- End of Content Wrapper -->
     </div>
+
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 
