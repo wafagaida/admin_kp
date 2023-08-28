@@ -66,7 +66,7 @@
             </li>
 
             <!-- Divider -->
-            <hr class="sidebar-divider">
+            <!-- <hr class="sidebar-divider"> -->
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">
@@ -75,7 +75,7 @@
                     <span>Data Siswa</span></a>
             </li>
 
-            <hr class="sidebar-divider">
+            <!-- <hr class="sidebar-divider"> -->
 
             <li class="nav-item ">
                 <a class="nav-link" href="siswa_nilai.html">
@@ -83,7 +83,7 @@
                     <span>Penilaian</span></a>
             </li>
 
-            <hr class="sidebar-divider">
+            <!-- <hr class="sidebar-divider"> -->
 
             <li class="nav-item active">
                 <a class="nav-link" href="siswa_jadwal.html">
@@ -91,7 +91,7 @@
                     <span>Jadwal Pelajaran</span></a>
             </li>
 
-            <hr class="sidebar-divider">
+            <!-- <hr class="sidebar-divider"> -->
 
             <li class="nav-item">
                 <a class="nav-link" href="siswa_bayar.html">
@@ -198,6 +198,15 @@
                                     const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
                                     const data = await response.json();
 
+                                    const jadwalPerHari = {};
+                                    data.data.forEach(d => {
+                                        const hari = d.hari;
+                                        if (!jadwalPerHari[hari]) {
+                                            jadwalPerHari[hari] = [];
+                                        }
+                                        jadwalPerHari[hari].push(d);
+                                    });
+
                                     if (data.success && data.data.length > 0) {
                                         const kelas = data.data[0].kelas;
                                         const jadwal = data.data;
@@ -236,27 +245,28 @@
                                             <div class="card-body">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                        ${Object.entries(jadwalPerHari).map(([hari, jadwal]) => `
                                                         <thead>
                                                             <tr>
-                                                                <th>No</th>
-                                                                <th>Hari</th>
+                                                                <td colspan="7" class="text-center text-gray-800"><h6>${hari}</h6></td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>No.</th>
                                                                 <th>Jam</th>
                                                                 <th>Kode MaPel</th>
                                                                 <th>Mata Pelajaran</th>
                                                                 <th>Guru</th>
                                                                 <th></th>
                                                             </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                           
                                                             ${jadwal.map((d, index) => `
                                                                 <tr>
                                                                     <td>${index + 1}</td>
-                                                                    <td>${d.hari}</td>
                                                                     <td>${d.jam}</td>
-                                                                    <td>${d.mapel.kd_mapel}</td>
-                                                                    <td>${d.mapel.nama_mapel}</td>
-                                                                    <td>${d.mapel.nama_guru}</td>
+                                                                    <td>${d.kd_mapel}</td>
+                                                                    <td>${d.mapel ? d.mapel.nama_mapel : ''}</td>
+                                                                    <td>${d.mapel ? d.mapel.nama_guru : ''}</td>
                                                                     <td>
                                                                         <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id="${d.id}">
                                                                             <span class="icon text-white">
@@ -271,6 +281,7 @@
                                                                     </td>
                                                                 </tr>
                                                             `).join('')}
+                                                            `).join('')}
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -279,7 +290,28 @@
                                     `;
                                     } else {
                                         siswaInfo.innerHTML = "<p>Data jadwal tidak ditemukan.</p>";
-                                        nilaiInfo.innerHTML = "";
+                                        nilaiInfo.innerHTML = `
+                                        <div class="card shadow mb-4">
+                                            <div class="card-header py-3">
+                                                <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
+                                                  <span class="icon text-white">
+                                                     <i class="fas fa-plus"></i>
+                                                    </span>
+                                                    <span class="text">Tambah Jadwal</span>
+                                                </button>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                                        <tr>
+                                                            <td colspan="4" class="text-center text-gray-800">Data Jadwal tidak ditemukan</td>
+                                                        </tr>
+                                                    </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                                
+                                                                `;
                                     }
                                 } catch (error) {
                                     nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
