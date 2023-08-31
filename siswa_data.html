@@ -64,16 +64,23 @@
             </li>
 
             <!-- Divider -->
-            <!-- <hr class="sidebar-divider"> -->
+            <hr class="sidebar-divider">
 
-            <!-- Nav Item - Tables -->
+            <div class="sidebar-heading">
+                AKADEMIK
+            </div>
+
             <li class="nav-item active">
                 <a class="nav-link" href="siswa_data.html">
                     <i class="fas fa-user fa"></i>
                     <span>Data Siswa</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
+            <li class="nav-item">
+                <a class="nav-link" href="hal_news.html">
+                    <i class="fas fa-bell fa"></i>
+                    <span>Pengumuman</span></a>
+            </li>
 
             <li class="nav-item">
                 <a class="nav-link" href="siswa_nilai.html">
@@ -81,15 +88,17 @@
                     <span>Penilaian</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
-
             <li class="nav-item">
-                <a class="nav-link" href="siswa_jadwal.html">
-                    <i class="fas fa-calendar fa"></i>
-                    <span>Jadwal Pelajaran</span></a>
+                <a class="nav-link" href="siswa_nilai.html">
+                    <i class="fas fa-clipboard-list fa"></i>
+                    <span>Penilaian</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                ADMINISTRASI
+            </div>
 
             <li class="nav-item">
                 <a class="nav-link" href="siswa_bayar.html">
@@ -342,7 +351,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type='button' class="btn btn-sukaraja" onclick="addData()">Tambah Data</button>
+                                    <button type='button' class="btn btn-sukaraja" onclick="addData()">Tambah
+                                        Data</button>
                                 </div>
                             </form>
                         </div>
@@ -495,14 +505,35 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type='button' class="btn btn-sukaraja" onclick="editData()">Edit Data</button>
+                                    <button type='button' class="btn btn-sukaraja" onclick="editData()">Edit
+                                        Data</button>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
+            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <!-- <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div> -->
+                        <div class="modal-body">Data Berhasil Ditambahkan!
+                        </div>
+                        <!-- <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <a class="btn btn-primary" href="siswa_data.html">Logout</a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
             <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">

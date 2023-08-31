@@ -14,11 +14,13 @@ function createTableRow(post, index) {
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>
-                <button type="button" id="data-id" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id='${post.id}'>
+                <button type="button" class="btn btn-success btn-icon-split btn-sm edit-button"
+                    data-toggle="modal" data-target="#editModal" id="edit-button" data-id="${post.id}">
                     <span class="icon text-white">
                         <i class="fas fa-edit"></i>
                     </span>
-                </button>
+                </button>   
+    
                 <button type="button" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${post.id}')">
                     <span class="icon text-white">
                         <i class="fas fa-trash"></i>
@@ -43,6 +45,9 @@ function getPosts() {
             data.data.forEach((post, index) => {
                 const row = createTableRow(post, index);
                 tableBody.innerHTML += row;
+
+                const editButton = document.getElementById('edit-button');
+                editButton.addEventListener('click', editData);
             });
 
         })
@@ -111,12 +116,13 @@ function addData() {
 }
 
 function editData() {
-
     const editForm = document.getElementById('editForm');
     const formData = new FormData(editForm);
     const modalBody = document.querySelector('.modal-body');
 
-    const id = document.getElementById('data-id').getAttribute('data-id');
+    const editButton = document.getElementById('edit-button');
+    // const editButton = event.target;
+    const id = editButton.getAttribute('data-id');
 
     fetch(`http://127.0.0.1:8000/api/news/${id}`, {
         method: 'PUT',

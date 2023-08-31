@@ -66,16 +66,23 @@
             </li>
 
             <!-- Divider -->
-            <!-- <hr class="sidebar-divider"> -->
+            <hr class="sidebar-divider">
 
-            <!-- Nav Item - Tables -->
+            <div class="sidebar-heading">
+                AKADEMIK
+            </div>
+
             <li class="nav-item">
                 <a class="nav-link" href="siswa_data.html">
                     <i class="fas fa-user fa"></i>
                     <span>Data Siswa</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
+            <li class="nav-item">
+                <a class="nav-link" href="hal_news.html">
+                    <i class="fas fa-bell fa"></i>
+                    <span>Pengumuman</span></a>
+            </li>
 
             <li class="nav-item active">
                 <a class="nav-link" href="siswa_nilai.html">
@@ -83,15 +90,17 @@
                     <span>Penilaian</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
-
             <li class="nav-item">
                 <a class="nav-link" href="siswa_jadwal.html">
                     <i class="fas fa-calendar fa"></i>
                     <span>Jadwal Pelajaran</span></a>
             </li>
 
-            <!-- <hr class="sidebar-divider"> -->
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                ADMINISTRASI
+            </div>
 
             <li class="nav-item">
                 <a class="nav-link" href="siswa_bayar.html">
@@ -275,7 +284,7 @@
                                                                                 <td>${d.mapel.nama_mapel}</td>
                                                                                 <td>${d.nilai !== null ? d.nilai : '-'}</td>
                                                                                 <td>
-                                                                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id="${d.id}">
+                                                                                    <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal"  id="edit-button" data-id="${d.id}">
                                                                                         <span class="icon text-white">
                                                                                             <i class="fas fa-edit"></i>
                                                                                         </span>
@@ -446,12 +455,15 @@
                                 });
                         }
 
-                        function editData(event) {
+                        function editData() {
                             const editForm = document.getElementById('editForm');
                             const formData = new FormData(editForm);
                             const modalBody = document.querySelector('.modal-body');
 
-                            const id = event.target.getAttribute('data-id');
+                            // const id = event.target.getAttribute('data-id');
+                            const editButton = document.getElementById('edit-button');
+                            // const editButton = event.target;
+                            const id = editButton.getAttribute('data-id');
 
                             fetch(`http://127.0.0.1:8000/api/nilai/${id}`, {
                                 method: 'PUT',
@@ -674,7 +686,7 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-sukaraja" onclick="editData(event)">Edit
+                                        <button type="button" class="btn btn-sukaraja" onclick="editData()">Edit
                                             Data</button>
                                     </div>
                                 </form>
