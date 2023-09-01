@@ -7063,6 +7063,17 @@ a.close.disabled {
     vertical-align: text-top !important
 }
 
+.bg-sukaraja {
+    background-color: #0773A1 !important
+}
+
+a.bg-sukaraja:focus,
+a.bg-sukaraja:hover,
+button.bg-sukaraja:focus,
+button.bg-sukaraja:hover {
+    background-color: #0773A1 !important
+}
+
 .bg-primary {
     background-color: #4e73df !important
 }

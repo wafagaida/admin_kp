@@ -67,41 +67,31 @@ function addData() {
             if (data.success === true) {
                 console.log('Success:', data);
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-success');
-                successMessage.textContent = "Data berhasil ditambahkan!";
-                modalBody.appendChild(successMessage);
+                $('#successMessage-add').modal('show');
 
                 getPosts();
 
                 setTimeout(() => {
                     $('#addModal').modal('hide');
-                    successMessage.remove();
+                    $('#successMessage-add').modal('hide');
                 }, 1200);
             } else {
                 console.error("Gagal menambah data.");
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-danger');
-                successMessage.textContent = "Data gagal ditambahkan!";
-                modalBody.appendChild(successMessage);
+                $('#errorMessage-add').modal('show');
 
                 setTimeout(() => {
-                    successMessage.remove();
+                    $('#errorMessage-add').modal('hide');
                 }, 1200);
             }
         })
         .catch(error => {
             console.error("Error adding data:", error);
 
-            // const errorMessage = error.message || "Error menambah data!";
-            const errorMessage = document.createElement('div');
-            errorMessage.classList.add('alert', 'alert-danger');
-            errorMessage.textContent = "Error menambah data!";
-            modalBody.appendChild(errorMessage);
+            $('#errorMessage-add').modal('show');
 
             setTimeout(() => {
-                errorMessage.remove();
+                $('#errorMessage-add').modal('hide');
             }, 1200);
         });
 }
@@ -114,37 +104,36 @@ function deleteData(id) {
         fetch(`http://127.0.0.1:8000/api/kelas/${id}`, {
             method: "DELETE",
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.url}`);
-            }
-            return response.json();
-        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.url}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success === true) {
                     getPosts();
 
-                    const deleteMessage = document.createElement('div');
-                    deleteMessage.classList.add('alert', 'alert-success');
-                    deleteMessage.textContent = "Data berhasil dihapus!";
-                    modalBody.appendChild(deleteMessage);
+                    $('#successMessage-delete').modal('show');
 
                     setTimeout(() => {
-                        deleteMessage.remove();
+                        $('#successMessage-delete').modal('hide');
                     }, 1200);
                 } else {
-                    const deleteMessage = document.createElement('div');
-                    deleteMessage.classList.add('alert', 'alert-danger');
-                    deleteMessage.textContent = "Gagal menghapus data.";
-                    modalBody.appendChild(deleteMessage);
+                    $('#errorMessage-delete').modal('show');
 
                     setTimeout(() => {
-                        deleteMessage.remove();
+                        $('#errorMessage-delete').modal('hide');
                     }, 1200);
                 }
             })
             .catch(error => {
                 console.error("Error deleting data:", error);
+                $('#errorMessage-delete').modal('show');
+
+                setTimeout(() => {
+                    $('#errorMessage-delete').modal('hide');
+                }, 1200);
             });
     }
 }

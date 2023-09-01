@@ -14,13 +14,12 @@ function createTableRow(post, index) {
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>
-                <button type="button" class="btn btn-success btn-icon-split btn-sm edit-button"
-                    data-toggle="modal" data-target="#editModal" id="edit-button" data-id="${post.id}">
+                <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="prepareEditData(${post.id})" data-id="${post.id}">
                     <span class="icon text-white">
                         <i class="fas fa-edit"></i>
                     </span>
-                </button>   
-    
+                </button>        
+        
                 <button type="button" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${post.id}')">
                     <span class="icon text-white">
                         <i class="fas fa-trash"></i>
@@ -28,6 +27,8 @@ function createTableRow(post, index) {
                 </button>
             </td>
         </tr>
+
+
     `;
 }
 
@@ -45,9 +46,6 @@ function getPosts() {
             data.data.forEach((post, index) => {
                 const row = createTableRow(post, index);
                 tableBody.innerHTML += row;
-
-                const editButton = document.getElementById('edit-button');
-                editButton.addEventListener('click', editData);
             });
 
         })
@@ -76,52 +74,66 @@ function addData() {
             if (data.success === true) {
                 console.log('Success:', data);
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-success');
-                successMessage.textContent = "Data berhasil ditambahkan!";
-                modalBody.appendChild(successMessage);
+                $('#successMessage-add').modal('show');
 
                 getPosts();
 
                 setTimeout(() => {
                     $('#addModal').modal('hide');
-                    successMessage.remove();
+                    $('#successMessage-add').modal('hide');
                 }, 1200);
             } else {
                 console.error("Gagal menambah data.");
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-danger');
-                successMessage.textContent = "Data gagal ditambahkan!";
-                modalBody.appendChild(successMessage);
+                $('#errorMessage-add').modal('show');
 
                 setTimeout(() => {
-                    successMessage.remove();
+                    $('#errorMessage-add').modal('hide');
                 }, 1200);
             }
         })
         .catch(error => {
             console.error("Error adding data:", error);
 
-            // const errorMessage = error.message || "Error menambah data!";
-            const errorMessage = document.createElement('div');
-            errorMessage.classList.add('alert', 'alert-danger');
-            errorMessage.textContent = "Error menambah data!";
-            modalBody.appendChild(errorMessage);
+            $('#errorMessage-add').modal('show');
 
             setTimeout(() => {
-                errorMessage.remove();
+                $('#errorMessage-add').modal('hide');
             }, 1200);
         });
 }
 
+function prepareEditData(id) {
+    fetch(`http://127.0.0.1:8000/api/news/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                const news = data.data;
+
+                // Mengisi formulir edit dengan data yang sesuai
+                document.getElementById('title').value = news.title;
+                document.getElementById('content').value = news.content;
+
+                // Mengatur gambar saat ini
+                // const currentImage = document.getElementById('currentImage');
+                // currentImage.src = `http://127.0.0.1:8000/api/image/${news.image}`;
+
+                // Menambahkan ID sebagai atribut data-id ke tombol "Edit" pada modal
+                const editButton = document.getElementById('editDataButton');
+                editButton.setAttribute('data-id', id);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data for edit:', error);
+        });
+}
+
+
 function editData() {
     const editForm = document.getElementById('editForm');
     const formData = new FormData(editForm);
-    const modalBody = document.querySelector('.modal-body');
 
-    const editButton = document.getElementById('edit-button');
-    // const editButton = event.target;
+    const editButton = document.getElementById('editDataButton');
     const id = editButton.getAttribute('data-id');
 
     fetch(`http://127.0.0.1:8000/api/news/${id}`, {
@@ -141,48 +153,38 @@ function editData() {
             if (data.success === true) {
                 console.log('Success:', data);
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-success');
-                successMessage.textContent = "Data berhasil diubah!";
-                modalBody.appendChild(successMessage);
+                $('#successMessage-update').modal('show');
 
                 getPosts();
 
                 setTimeout(() => {
                     $('#editModal').modal('hide');
-                    successMessage.remove();
+                    $('#successMessage-update').modal('hide');
                 }, 1200);
 
             } else {
                 console.error("Gagal mengedit data.");
 
-                const successMessage = document.createElement('div');
-                successMessage.classList.add('alert', 'alert-danger');
-                successMessage.textContent = "Data gagal ditambahkan!";
-                modalBody.appendChild(successMessage);
+                $('#errorMessage-update').modal('show');
 
                 setTimeout(() => {
-                    successMessage.remove();
+                    $('#errorMessage-update').modal('hide');
                 }, 1200);
             }
         })
         .catch(error => {
             console.error('Error editing data:', error);
 
-            const errorMessage = document.createElement('div');
-            errorMessage.classList.add('alert', 'alert-danger');
-            errorMessage.textContent = "Error mengedit data!";
-            modalBody.appendChild(errorMessage);
+            $('#errorMessage-update').modal('show');
 
             setTimeout(() => {
-                errorMessage.remove();
+                $('#errorMessage-update').modal('hide');
             }, 1200);
         });
 }
 
 function deleteData(id) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
-    const modalBody = document.querySelector('.container-fluid');
 
     if (confirmation) {
         fetch(`http://127.0.0.1:8000/api/news/${id}`, {
@@ -193,27 +195,26 @@ function deleteData(id) {
                 if (data.success === true) {
                     getPosts();
 
-                    const deleteMessage = document.createElement('div');
-                    deleteMessage.classList.add('alert', 'alert-success');
-                    deleteMessage.textContent = "Data berhasil dihapus!";
-                    modalBody.appendChild(deleteMessage);
+                    $('#successMessage-delete').modal('show');
 
                     setTimeout(() => {
-                        deleteMessage.remove();
+                        $('#successMessage-delete').modal('hide');
                     }, 1200);
                 } else {
-                    const deleteMessage = document.createElement('div');
-                    deleteMessage.classList.add('alert', 'alert-danger');
-                    deleteMessage.textContent = "Gagal menghapus data.";
-                    modalBody.appendChild(deleteMessage);
+                    $('#errorMessage-delete').modal('show');
 
                     setTimeout(() => {
-                        deleteMessage.remove();
+                        $('#errorMessage-delete').modal('hide');
                     }, 1200);
                 }
             })
             .catch(error => {
                 console.error("Error deleting data:", error);
+                $('#errorMessage-delete').modal('show');
+
+                setTimeout(() => {
+                    $('#errorMessage-delete').modal('hide');
+                }, 1200);
             });
     }
 }

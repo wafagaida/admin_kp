@@ -49,10 +49,10 @@
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                <div class="sidebar-brand-icon">
+                    <img class="col-sm" src="img/logoSMK.png">
                 </div>
-                <div class="sidebar-brand-text mx-3">Admin Sukaraja</div>
+                <div class="sidebar-brand-text mx-3">SISPS Sukaraja</div>
             </a>
 
             <!-- Divider -->
@@ -77,7 +77,7 @@
                     <i class="fas fa-user fa"></i>
                     <span>Data Siswa</span></a>
             </li>
-            
+
             <li class="nav-item">
                 <a class="nav-link" href="hal_news.html">
                     <i class="fas fa-bell fa"></i>
@@ -165,319 +165,8 @@
                     <div id="siswaInfo"></div>
                     <div id="nilaiInfo"></div>
 
+                    <script src="js/jadwalSiswa.js"></script>
 
-
-                    <script>
-                        document.addEventListener('DOMContentLoaded', async function () {
-                            const kelasDropdown = document.getElementById('kelasDropdown');
-                            const searchForm = document.getElementById('searchForm');
-                            const siswaInfo = document.getElementById('siswaInfo');
-                            const nilaiInfo = document.getElementById('nilaiInfo');
-
-                            // Fetch daftar kelas
-                            try {
-                                const response = await fetch('http://127.0.0.1:8000/api/kelas');
-                                const data = await response.json();
-
-                                if (data.success) {
-                                    // Populate dropdown with class options
-                                    data.data.forEach(kelas => {
-                                        const option = document.createElement('option');
-                                        option.value = kelas.kd_kelas;
-                                        option.textContent = kelas.kd_kelas;
-                                        kelasDropdown.appendChild(option);
-                                    });
-                                } else {
-                                    console.error('Failed to fetch class data.');
-                                }
-                            } catch (error) {
-                                console.error('Error fetching class data:', error);
-                            }
-
-                            // Event listener when form is submitted
-                            searchForm.addEventListener('submit', async function (event) {
-                                event.preventDefault();
-
-                                const selectedKelas = kelasDropdown.value;
-
-                                nilaiInfo.innerHTML = `<p class="text-center">Loading jadwal pelajaran...</p>`;
-
-                                try {
-                                    // Fetch jadwal pelajaran based on selected kd_kelas
-                                    const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
-                                    const data = await response.json();
-
-                                    const jadwalPerHari = {};
-                                    data.data.forEach(d => {
-                                        const hari = d.hari;
-                                        if (!jadwalPerHari[hari]) {
-                                            jadwalPerHari[hari] = [];
-                                        }
-                                        jadwalPerHari[hari].push(d);
-                                    });
-
-                                    if (data.success && data.data.length > 0) {
-                                        const kelas = data.data[0].kelas;
-                                        const jadwal = data.data;
-
-                                        // Display class info
-                                        siswaInfo.innerHTML = `
-                                    <h5>Detail Kelas</h5>
-                                        <table class="table table-bordered" id="jadwal" width="100%" cellspacing="0">
-                                            <tr>
-                                                <td>Tingkat</td>
-                                                <td>${kelas.tingkat}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Jurusan</td>
-                                                <td>${kelas.jurusan}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Kelas</td>
-                                                <td>${kelas.nama_kelas}</td>
-                                            </tr>
-                                        </table>
-                                        <br>
-                                    `;
-
-                                        // Display jadwal pelajaran data
-                                        nilaiInfo.innerHTML = `
-                                        <div class="card shadow mb-4">
-                                            <div class="card-header py-3">
-                                                <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
-                                                  <span class="icon text-white">
-                                                     <i class="fas fa-plus"></i>
-                                                    </span>
-                                                    <span class="text">Tambah Jadwal</span>
-                                                </button>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                                                        ${Object.entries(jadwalPerHari).map(([hari, jadwal]) => `
-                                                        <thead>
-                                                            <tr>
-                                                                <td colspan="7" class="text-center text-gray-800"><h6>${hari}</h6></td>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <th>No.</th>
-                                                                <th>Jam</th>
-                                                                <th>Kode MaPel</th>
-                                                                <th>Mata Pelajaran</th>
-                                                                <th>Guru</th>
-                                                                <th></th>
-                                                            </tr>
-                                                            ${jadwal.map((d, index) => `
-                                                                <tr>
-                                                                    <td>${index + 1}</td>
-                                                                    <td>${d.jam}</td>
-                                                                    <td>${d.kd_mapel}</td>
-                                                                    <td>${d.mapel ? d.mapel.nama_mapel : ''}</td>
-                                                                    <td>${d.mapel ? d.mapel.nama_guru : ''}</td>
-                                                                    <td>
-                                                                        <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" data-id="${d.id}">
-                                                                            <span class="icon text-white">
-                                                                                <i class="fas fa-edit"></i>
-                                                                            </span>
-                                                                        </button>
-                                                                        <a href="#" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${d.id}')">
-                                                                             <span class="icon text-white">
-                                                                                <i class="fas fa-trash"></i>
-                                                                            </span>
-                                                                        </a>
-                                                                    </td>
-                                                                </tr>
-                                                            `).join('')}
-                                                            `).join('')}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    `;
-                                    } else {
-                                        siswaInfo.innerHTML = "<p>Data jadwal tidak ditemukan.</p>";
-                                        nilaiInfo.innerHTML = `
-                                        <div class="card shadow mb-4">
-                                            <div class="card-header py-3">
-                                                <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal" data-target="#addModal" onclick="">
-                                                  <span class="icon text-white">
-                                                     <i class="fas fa-plus"></i>
-                                                    </span>
-                                                    <span class="text">Tambah Jadwal</span>
-                                                </button>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                                                        <tr>
-                                                            <td colspan="4" class="text-center text-gray-800">Data Jadwal tidak ditemukan</td>
-                                                        </tr>
-                                                    </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                                
-                                                                `;
-                                    }
-                                } catch (error) {
-                                    nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
-                                    console.error('Error fetching data:', error);
-                                }
-                            });
-                        });
-
-                        function fillMapelOptions() {
-                            fetch(`http://localhost:8000/api/mapel`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const kdMapelSelect = document.getElementById('kd_mapel');
-
-                                    if (data.success && data.data.length > 0) {
-                                        data.data.forEach(mapel => {
-                                            const option = document.createElement('option');
-                                            option.value = mapel.kd_mapel;
-                                            option.textContent = mapel.nama_mapel;
-                                            kdMapelSelect.appendChild(option);
-                                        });
-                                    } else {
-                                        const defaultOption = document.createElement('option');
-                                        defaultOption.value = 'Jurusan';
-                                        defaultOption.textContent = '-- Pilih Satu --';
-                                        kdMapelSelect.appendChild(defaultOption);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching mata pelajaran:', error);
-                                });
-                        }
-
-                        fillMapelOptions();
-
-                        function fillEditMapelOptions() {
-                            fetch(`http://localhost:8000/api/mapel`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const kdMapelSelect = document.getElementById('kd_mapel_edit');
-
-                                    if (data.success && data.data.length > 0) {
-                                        data.data.forEach(mapel => {
-                                            const option = document.createElement('option');
-                                            option.value = mapel.kd_mapel;
-                                            option.textContent = mapel.nama_mapel;
-                                            kdMapelSelect.appendChild(option);
-                                        });
-                                    } else {
-                                        const defaultOption = document.createElement('option');
-                                        defaultOption.value = 'Jurusan';
-                                        defaultOption.textContent = '-- Pilih Satu --';
-                                        kdMapelSelect.appendChild(defaultOption);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching mata pelajaran:', error);
-                                });
-                        }
-
-                        // Panggil fungsi untuk mengisi opsi kd_mapel_edit saat halaman dimuat
-                        fillEditMapelOptions();
-
-                        function addData() {
-                            const addForm = document.getElementById('addForm');
-                            const formData = new FormData(addForm);
-                            const modalBody = document.querySelector('.modal-body');
-
-                            fetch("http://127.0.0.1:8000/api/jadwal", {
-                                method: "POST",
-                                body: formData,
-                            })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(`HTTP error! Status: ${response.status}`);
-                                    }
-                                    return response.json();
-                                })
-                                .then(data => {
-                                    if (data.success === true) {
-                                        // Refresh the data
-                                        // loadData()
-
-                                        // Tampilkan pesan sukses
-                                        const successMessage = document.createElement('div');
-                                        successMessage.classList.add('alert', 'alert-success');
-                                        successMessage.textContent = "Data berhasil ditambahkan!";
-                                        modalBody.appendChild(successMessage);
-
-                                        // Hide the modal after a short delay
-                                        setTimeout(() => {
-                                            $('#addModal').modal('hide');
-                                        }, 1200);
-
-                                        // Remove the success message after a delay
-                                        setTimeout(() => {
-                                            successMessage.remove();
-                                        }, 1200);
-                                    } else {
-                                        console.error("Gagal menambah data.");
-
-                                        const successMessage = document.createElement('div');
-                                        successMessage.classList.add('alert', 'alert-error');
-                                        successMessage.textContent = "Data gagal ditambahkan!";
-                                        modalBody.appendChild(successMessage);
-
-                                        setTimeout(() => {
-                                            successMessage.remove();
-                                        }, 1200);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error("Error adding data:", error);
-                                });
-                        }
-
-                        function deleteData(id) {
-                            const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
-                            if (confirmation) {
-                                fetch(`http://127.0.0.1:8000/api/jadwal/${id}`, {
-                                    method: "DELETE",
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.success === true) {
-                                            // Refresh the data after successful deletion
-                                            // loadData()
-
-                                            // Display delete success message
-                                            const deleteMessage = document.createElement('div');
-                                            deleteMessage.classList.add('alert', 'alert-success');
-                                            deleteMessage.textContent = "Data berhasil dihapus!";
-                                            document.body.appendChild(deleteMessage);
-
-                                            // Remove the message after a delay
-                                            setTimeout(() => {
-                                                deleteMessage.remove();
-                                            }, 1200); // Remove after 3 seconds
-                                        } else {
-                                            // Display delete failure message
-                                            const deleteMessage = document.createElement('div');
-                                            deleteMessage.classList.add('alert', 'alert-danger');
-                                            deleteMessage.textContent = "Gagal menghapus data.";
-                                            document.body.appendChild(deleteMessage);
-
-                                            // Remove the message after a delay
-                                            setTimeout(() => {
-                                                deleteMessage.remove();
-                                            }, 1200); // Remove after 3 seconds
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error("Error deleting data:", error);
-                                    });
-                            }
-                        }
-                    </script>
                 </div>
 
                 <!-- End of Main Content -->
@@ -487,7 +176,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="addModalLabel">Tambah Data Nilai</h5>
+                                <h5 class="modal-title" id="addModalLabel">Tambah Jadwal</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -583,7 +272,7 @@
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel">Edit Data Nilai</h5>
+                                <h5 class="modal-title" id="editModalLabel">Edit Jadwal</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -593,50 +282,143 @@
                                 <form id="editForm" method='post'>
                                     <div class="form-group">
                                         <div class="row">
-                                            <label class="col-sm-3 control-label text-right">NIS</label>
-                                            <div class="col-sm-8"><input type="text" name="nis" class="form-control"
-                                                    id="nis" value="" required></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
                                             <label class="col-sm-3 control-label text-right">Mapel</label>
-                                            <div class="col-sm-8"><select name="kd_mapel" id="kd_mapel_edit"
-                                                    class="form-control" style="width: 100%;">
+                                            <div class="col-sm-8">
+                                                <select name="kd_mapel" id="kd_mapel_edit" class="form-control"
+                                                    style="width: 100%;">
+                                                    <option value="Kelas" selected="selected">-- Pilih Satu --</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <div class="row">
-                                            <label class="col-sm-3 control-label text-right">Nilai</label>
-                                            <div class="col-sm-8"><input type="text" name="nilai" class="form-control"
-                                                    id="nilai" value="" required></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label class="col-sm-3 control-label text-right">Semester</label>
-                                            <div class="col-sm-8"><select name="semester" id="semester"
+                                            <label class="col-sm-3 control-label text-right"
+                                                for="tingkat">Tingkat</label>
+                                            <div class="col-sm-8"><select name="tingkat" id="tingkat"
                                                     class="form-control" style="width: 100%;">
-                                                    <option value="Semester" selected="selected">-- Pilih Satu --
+                                                    <option value="Tingkat" selected="selected">-- Pilih Satu --
                                                     </option>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
-                                                    <option value="5">5</option>
-                                                    <option value="6">6</option>
+                                                    <option value="X">X</option>
+                                                    <option value="XI">XI</option>
+                                                    <option value="XII">XII</option>
                                                 </select>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right" for="kelas">Kelas</label>
+                                            <div class="col-sm-8"><select name="kd_kelas" id="kd_kelas"
+                                                    class="form-control" style="width: 100%;">
+                                                    <option value="Kelas" selected="selected">-- Pilih Satu --</option>
+                                                    <option value="xtsm1">X TSM</option>
+                                                    <option value="xdkv1">X DKV A</option>
+                                                    <option value="xdkv2">X DKV B</option>
+                                                    <option value="xfarm1">X FARM</option>
+                                                    <option value="xitsm1">XI TSM</option>
+                                                    <option value="xidkv1">XI DKV A</option>
+                                                    <option value="xidkv2">XI DKV B</option>
+                                                    <option value="xifarm1">XI FARM A</option>
+                                                    <option value="xifarm2">XI FARM B</option>
+                                                    <option value="xiitsm1">XII TSM</option>
+                                                    <option value="xiidkv1">XII DKV A</option>
+                                                    <option value="xiidkv2">XII DKV B</option>
+                                                    <option value="xiifarm1">XII FARM A</option>
+                                                    <option value="xiifarm2">XII FARM B</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Hari</label>
+                                            <div class="col-sm-8"><select name="hari" id="hari" class="form-control"
+                                                    style="width: 100%;">
+                                                    <option value="Hari" selected="selected">-- Pilih Satu --
+                                                    </option>
+                                                    <option value="Senin">Senin</option>
+                                                    <option value="Selasa">Selasa</option>
+                                                    <option value="Rabu">Rabu</option>
+                                                    <option value="Kamis">Kamis</option>
+                                                    <option value="Jum'at">Jum'at</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col-sm-3 control-label text-right">Jam</label>
+                                            <div class="col-sm-8"><input type="text" name="jam" class="form-control"
+                                                    id="jam" value="" required></div>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-sukaraja" onclick="editData(event)">Edit
-                                            Data</button>
+                                        <button type="button" class="btn btn-sukaraja" id="editDataButton"
+                                            onclick="editData()">Edit Data</button>
                                     </div>
                                 </form>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="successMessage-add" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Ditambahkan!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="errorMessage-add" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-danger text-white text-center">Error Menambah Data!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="successMessage-update" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Diubah!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="errorMessage-update" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-danger text-white text-center">Error Mengubah Data!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="successMessage-delete" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Dihapus!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="errorMessage-delete" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body p-3 bg-danger text-white text-center">Error Menghapus Data!
                         </div>
                     </div>
                 </div>
