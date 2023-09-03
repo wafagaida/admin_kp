@@ -89,9 +89,9 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="siswa_nilai.html">
-                    <i class="fas fa-clipboard-list fa"></i>
-                    <span>Penilaian</span></a>
+                <a class="nav-link" href="siswa_jadwal.html">
+                    <i class="fas fa-calendar fa"></i>
+                    <span>Jadwal Pelajaran</span></a>
             </li>
 
             <hr class="sidebar-divider">
@@ -138,21 +138,6 @@
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    <!-- Topbar Search -->
-                    <!-- <form class="inline-block form-inline ">
-                        <div class="input-group">
-                            <input type="text" class="form-control small" placeholder="Search for..."
-                                aria-label="Search" aria-describedby="basic-addon2">
-                            <div class="input-group-append">
-                                <button class="btn btn-sukaraja" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form> -->
-
-                    <!-- <br> -->
-
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <button type="button" class="btn btn-sukaraja btn-icon-split btn-sm" data-toggle="modal"
@@ -166,15 +151,16 @@
 
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                <table class="table table-bordered" id="dataTableSiswa" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th>No.</th>
                                             <th>NIS</th>
                                             <th>Nama</th>
-                                            <th>Jurusan</th>
-                                            <th>Tingkat</th>
                                             <th>Jenis Kelamin</th>
+                                            <th>Tingkat</th>
+                                            <th>Jurusan</th>
+                                            <th>Kelas</th>
                                             <th>NIK</th>
                                             <th>Tanggal Lahir</th>
                                             <th>Alamat</th>
@@ -186,21 +172,17 @@
                                         <div id="loading" class="text-center" style="display: none;">
                                             <img src="loading.gif" alt="Loading...">
                                         </div>
-
                                         <!-- This is where the rows will be added -->
                                         <script>
-                                            getPosts(); // Memanggil fungsi getPosts() saat halaman dimuat
-
+                                            getPosts(); 
                                         </script>
 
                                     </tbody>
-
-
                                 </table>
                             </div>
                         </div>
-
                     </div>
+
                 </div>
                 <!-- /.container-fluid -->
 
@@ -325,8 +307,10 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <label class="col-sm-3 control-label text-right" for="alamat">Alamat</label>
-                                        <div class="col-sm-8"><input type="text" name="alamat" class="form-control"
-                                                id="alamat" value="" required></div>
+                                        <div class="col-sm-8">
+                                            <textarea name="alamat" class="form-control" id="alamat" value=""
+                                                required></textarea>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -348,6 +332,19 @@
                                         <label class="col-sm-3 control-label text-right" for="password">Password</label>
                                         <div class="col-sm-8"><input type="text" name="password" class="form-control"
                                                 id="password" value="" required></div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right" for="level">Level</label>
+                                        <div class="col-sm-8"><select name="level" id="level" class="form-control"
+                                                style="width: 100%;">
+                                                <option value="Level" selected="selected">-- Pilih Satu --
+                                                </option>
+                                                <option value="Siswa">Siswa</option>
+                                                <option value="Admin">Admin</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -479,8 +476,10 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <label class="col-sm-3 control-label text-right" for="alamat">Alamat</label>
-                                        <div class="col-sm-8"><input type="text" name="alamat" class="form-control"
-                                                id="alamat" value="" required></div>
+                                        <div class="col-sm-8">
+                                            <textarea name="alamat" class="form-control" id="alamat" value=""
+                                                required></textarea>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -504,6 +503,19 @@
                                                 id="password" value="" required></div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <label class="col-sm-3 control-label text-right" for="level">Level</label>
+                                        <div class="col-sm-8"><select name="level" id="level" class="form-control"
+                                                style="width: 100%;">
+                                                <option value="Level" selected="selected">-- Pilih Satu --
+                                                </option>
+                                                <option value="Siswa">Siswa</option>
+                                                <option value="Admin">Admin</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="modal-footer">
                                     <button type='button' class="btn btn-sukaraja" onclick="editData()">Edit
                                         Data</button>
@@ -514,8 +526,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="successMessage-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="successMessage-add" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Ditambahkan!
@@ -524,8 +536,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="errorMessage-add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="errorMessage-add" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-danger text-white text-center">Error Menambah Data!
@@ -534,8 +546,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="successMessage-update" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="successMessage-update" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Diubah!
@@ -544,8 +556,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="errorMessage-update" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="errorMessage-update" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-danger text-white text-center">Error Mengubah Data!
@@ -554,8 +566,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="successMessage-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="successMessage-delete" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-success text-white text-center">Data Berhasil Dihapus!
@@ -564,8 +576,8 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="errorMessage-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="errorMessage-delete" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-body p-3 bg-danger text-white text-center">Error Menghapus Data!

@@ -26,16 +26,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(data => {
                     if (data.success === true) {
-                        localStorage.setItem('token', data.token);
-                        alert('Login berhasil!');
-                        window.location.href = 'index.html';
+                        if (data.user.level === 'Admin') { 
+                            localStorage.setItem('token', data.token);
+                            $('#successMessage').modal('show');
+
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                                $('#successMessage').modal('hide');
+                            }, 1200);
+                        } else {
+                            $('#errorMessage').modal('show');
+
+                            setTimeout(() => {
+                                $('#errorMessage').modal('hide');
+                            }, 3000);
+                        }
                     } else {
-                        alert('Login gagal. Cek kembali username dan password Anda.');
+                        // alert('Login gagal. Cek kembali username dan password Anda.');
+                        $('#errorMessage').modal('show');
+
+                        setTimeout(() => {
+                            $('#errorMessage').modal('hide');
+                        }, 3000);
                     }
                 })
                 .catch(error => {
                     console.error("Error adding data:", error);
-                    alert('Login gagal. Cek kembali username dan password Anda.');
+                    $('#errorMessage').modal('show');
+
+                    setTimeout(() => {
+                        $('#errorMessage').modal('hide');
+                    }, 3000);
 
                 });
         } catch (error) {

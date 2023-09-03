@@ -173,7 +173,8 @@ sup {
 }
 
 a {
-    color: #4e73df;
+    /* color: #4e73df; */
+    color: #0773A1;
     text-decoration: none;
     background-color: transparent
 }
@@ -5323,14 +5324,14 @@ input[type=submit].btn-block {
     padding: .5rem .75rem;
     margin-left: -1px;
     line-height: 1.25;
-    color: #4e73df;
+    color: #0773A1;
     background-color: #fff;
     border: 1px solid #dddfeb
 }
 
 .page-link:hover {
     z-index: 2;
-    color: #224abe;
+    color: #0773A1;
     text-decoration: none;
     background-color: #eaecf4;
     border-color: #dddfeb
@@ -5356,8 +5357,8 @@ input[type=submit].btn-block {
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
-    background-color: #4e73df;
-    border-color: #4e73df
+    background-color: #0773A1;
+    border-color: #0773A1
 }
 
 .page-item.disabled .page-link {

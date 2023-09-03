@@ -49,16 +49,27 @@ function logout() {
             .then(data => {
                 if (data.success === true) {
                     localStorage.removeItem('token'); 
-                    alert('Logout berhasil!');
-                    window.location.href = 'login.html';
+                    $('#successMessage').modal('show');
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                        $('#successMessage').modal('hide');
+                    }, 1200);
                 } else {
-                    alert('Login gagal.');
+                    $('#errorMessage').modal('show');
+
+                    setTimeout(() => {
+                        $('#errorMessage').modal('hide');
+                    }, 3000);
                 }
             })
             .catch(error => {
                 console.error("Error logout data:", error);
-                alert('Login gagal.');
+                $('#errorMessage').modal('show');
 
+                setTimeout(() => {
+                    $('#errorMessage').modal('hide');
+                }, 3000);
             });
     } catch (error) {
         console.error('Terjadi kesalahan:', error);

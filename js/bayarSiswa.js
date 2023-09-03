@@ -36,30 +36,30 @@ function loadSiswaAndBayar(nis) {
                 const biodata = data.data[0];
 
                 siswaInfo.innerHTML = `
-<h5>Biodata Siswa</h5>
-<table table class="table table-bordered" id="bayar" width="100%" cellspacing="0">
-<tr>
-    <td>NIS</td>
-    <td>${biodata.nis}</td>
-</tr>
-<tr>
-    <td>Nama</td>
-    <td>${biodata.nama}</td>
-</tr>
-<tr>
-    <td>Jurusan</td>
-    <td>${biodata.jurusan}</td>
-</tr>
-<tr>
-    <td>Kelas</td>
-    <td>${biodata.kelas.nama_kelas}</td>
-</tr>
-<tr>
-    <td>Tahun Masuk</td>
-    <td>${biodata.tahun_masuk}</td>
-</tr>
-</table>
-<br>
+                <h5>Biodata Siswa</h5>
+                <table table class="table table-bordered" id="bayar" width="100%" cellspacing="0">
+                <tr>
+                    <td>NIS</td>
+                    <td>${biodata.nis}</td>
+                </tr>
+                <tr>
+                    <td>Nama</td>
+                    <td>${biodata.nama}</td>
+                </tr>
+                <tr>
+                    <td>Jurusan</td>
+                    <td>${biodata.jurusan}</td>
+                </tr>
+                <tr>
+                    <td>Kelas</td>
+                    <td>${biodata.kelas.nama_kelas}</td>
+                </tr>
+                <tr>
+                    <td>Tahun Masuk</td>
+                    <td>${biodata.tahun_masuk}</td>
+                </tr>
+                </table>
+                <br>
 `;
             } else {
                 siswaInfo.innerHTML = "<p>Data siswa tidak ditemukan.</p>";

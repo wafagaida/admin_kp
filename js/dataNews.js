@@ -7,6 +7,13 @@ function hideLoading() {
 }
 
 function createTableRow(post, index) {
+    if (!post) {
+        return `
+            <tr>
+                <td colspan="5" class="text-center text-gray-800">Data pengumuman belum ditambahkan.</td>
+            </tr>
+        `;
+    }
     return `
         <tr>
             <td>${index + 1}</td>
@@ -27,8 +34,6 @@ function createTableRow(post, index) {
                 </button>
             </td>
         </tr>
-
-
     `;
 }
 
@@ -43,11 +48,15 @@ function getPosts() {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
 
-            data.data.forEach((post, index) => {
-                const row = createTableRow(post, index);
-                tableBody.innerHTML += row;
-            });
-
+            if (data.data.length === 0) {
+                const noDataMessage = createTableRow(null, null);
+                tableBody.innerHTML = noDataMessage;
+            } else {
+                data.data.forEach((post, index) => {
+                    const row = createTableRow(post, index);
+                    tableBody.innerHTML += row;
+                });
+            }
         })
         .catch(error => {
             console.error("Error fetching data:", error);

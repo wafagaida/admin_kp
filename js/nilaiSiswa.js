@@ -16,8 +16,6 @@ document.querySelector('#searchForm button[type="submit"]').addEventListener('cl
 });
 
 function loadSiswaAndNilai(nis) {
-
-
     const siswaInfo = document.getElementById('siswaInfo');
     const nilaiInfo = document.getElementById('nilaiInfo');
 
@@ -109,6 +107,7 @@ function loadSiswaAndNilai(nis) {
                                         <tr>
                                             <th>No</th>
                                             <th>Mata Pelajaran</th>
+                                            <th>Nama Guru</th>
                                             <th>Nilai</th>
                                             <th></th>
                                         </tr>
@@ -116,6 +115,7 @@ function loadSiswaAndNilai(nis) {
                                             <tr>
                                                 <td>${index + 1}</td>
                                                 <td>${d.mapel.nama_mapel}</td>
+                                                <td>${d.mapel.nama_guru}</td>
                                                 <td>${d.nilai !== null ? d.nilai : '-'}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="prepareEditData(${d.id})" data-id="${d.id}">
@@ -154,8 +154,8 @@ function loadSiswaAndNilai(nis) {
                         <div class="table-responsive">
                             <table class="table table-bordered" id="" width="100%" cellspacing="0">
                                 <tr>
-                                            <td colspan="4" class="text-center text-gray-800">Data Nilai tidak ditemukan</td>
-                                        </tr>
+                                    <td colspan="5" class="text-center text-gray-800">Data Nilai tidak ditemukan</td>
+                                </tr>
                             </table>
                         </div>
                     </div>
@@ -192,7 +192,7 @@ function fillMapelOptions() {
                 data.data.forEach(mapel => {
                     const option = document.createElement('option');
                     option.value = mapel.kd_mapel;
-                    option.textContent = mapel.nama_mapel;
+                    option.textContent = `${mapel.nama_mapel} (${mapel.nama_guru})`;
                     kdMapelSelect.appendChild(option);
                 });
             } else {
@@ -219,7 +219,7 @@ function fillEditMapelOptions() {
                 data.data.forEach(mapel => {
                     const option = document.createElement('option');
                     option.value = mapel.kd_mapel;
-                    option.textContent = mapel.nama_mapel;
+                    option.textContent = `${mapel.nama_mapel} (${mapel.nama_guru})`;
                     kdMapelSelect.appendChild(option);
                 });
             } else {

@@ -74,16 +74,14 @@ async function loadJadwal(selectedKelas) {
                                 <tr>
                                     <th>No.</th>
                                     <th>Jam</th>
-                                    <th>Kode MaPel</th>
                                     <th>Mata Pelajaran</th>
-                                    <th>Guru</th>
+                                    <th>Nama Guru</th>
                                     <th></th>
                                 </tr>
                                 ${jadwal.map((d, index) => `
                                     <tr>
                                         <td>${index + 1}</td>
                                         <td>${d.jam}</td>
-                                        <td>${d.kd_mapel}</td>
                                         <td>${d.mapel ? d.mapel.nama_mapel : ''}</td>
                                         <td>${d.mapel ? d.mapel.nama_guru : ''}</td>
                                         <td>
@@ -180,7 +178,7 @@ function fillMapelOptions() {
                 data.data.forEach(mapel => {
                     const option = document.createElement('option');
                     option.value = mapel.kd_mapel;
-                    option.textContent = mapel.nama_mapel;
+                    option.textContent = `${mapel.nama_mapel} (${mapel.nama_guru})`;
                     kdMapelSelect.appendChild(option);
                 });
             } else {
@@ -207,7 +205,7 @@ function fillEditMapelOptions() {
                 data.data.forEach(mapel => {
                     const option = document.createElement('option');
                     option.value = mapel.kd_mapel;
-                    option.textContent = mapel.nama_mapel;
+                    option.textContent = `${mapel.nama_mapel} (${mapel.nama_guru})`;
                     kdMapelSelect.appendChild(option);
                 });
             } else {
@@ -282,10 +280,10 @@ function prepareEditData(id) {
                 const jadwal = data.data; // Data nilai yang akan diedit
 
                 // Mengisi formulir edit dengan data yang sesuai
-                document.getElementById('kd_mapel_edit').value = jadwal.kd_mapel;
                 document.getElementById('tingkat').value = jadwal.tingkat;
                 document.getElementById('kd_kelas').value = jadwal.kd_kelas;
                 document.getElementById('hari').value = jadwal.hari;
+                document.getElementById('kd_mapel_edit').value = jadwal.kd_mapel;
                 document.getElementById('jam').value = jadwal.jam;
 
                 // Menambahkan ID sebagai atribut data-id ke tombol "Edit" pada modal
