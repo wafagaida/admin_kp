@@ -6,6 +6,8 @@ function hideLoading() {
     document.getElementById('loading').style.display = 'none';
 }
 
+// const baseUrl = 'https://api.smkpsukaraja.sch.id/api'
+
 function createTableRow(post, index) {
     return `
         <tr>
@@ -38,7 +40,7 @@ function createTableRow(post, index) {
 
 function getPosts() {
     showLoading();
-    fetch('http://127.0.0.1:8000/api/posts')
+    fetch('https://api.smkpsukaraja.sch.id/api/posts')
         .then(response => response.json())
         .then(data => {
             hideLoading();
@@ -155,7 +157,7 @@ function addData() {
     const addForm = document.getElementById('addForm');
     const formData = new FormData(addForm);
 
-    fetch("http://127.0.0.1:8000/api/posts", {
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts`, {
         method: "POST",
         body: formData,
     })
@@ -203,7 +205,7 @@ function editData() {
     const formData = new FormData(editForm);
     const nis = formData.get('nis');
 
-    fetch(`http://127.0.0.1:8000/api/posts/${nis}`, {
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts/${nis}`, {
         method: 'PUT',
         body: JSON.stringify(Object.fromEntries(formData)),
         headers: {
@@ -254,7 +256,7 @@ function deleteData(nis) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/posts/${nis}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/posts/${nis}`, {
             method: "DELETE",
         })
             .then(response => response.json())

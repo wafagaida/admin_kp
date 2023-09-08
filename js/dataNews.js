@@ -17,7 +17,7 @@ function createTableRow(post, index) {
     return `
         <tr>
             <td>${index + 1}</td>
-            <td><img src='http://127.0.0.1:8000/api/image/${post.image}' style="max-width: 100px; max-height: 100px;"></td>
+            <td><img src='https://api.smkpsukaraja.sch.id/api/image/${post.image}' style="max-width: 100px; max-height: 100px;"></td>
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>
@@ -39,7 +39,7 @@ function createTableRow(post, index) {
 
 function getPosts() {
     showLoading();
-    fetch('http://127.0.0.1:8000/api/news')
+    fetch('https://api.smkpsukaraja.sch.id/api/news')
         .then(response => response.json())
         .then(data => {
             hideLoading();
@@ -69,7 +69,7 @@ function addData() {
     const formData = new FormData(addForm);
     const modalBody = document.querySelector('.modal-body');
 
-    fetch("http://127.0.0.1:8000/api/news", {
+    fetch("https://api.smkpsukaraja.sch.id/api/news", {
         method: "POST",
         body: formData,
     })
@@ -113,7 +113,7 @@ function addData() {
 }
 
 function prepareEditData(id) {
-    fetch(`http://127.0.0.1:8000/api/news/${id}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/news/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {
@@ -145,7 +145,7 @@ function editData() {
     const editButton = document.getElementById('editDataButton');
     const id = editButton.getAttribute('data-id');
 
-    fetch(`http://127.0.0.1:8000/api/news/${id}`, {
+    fetch(`https://api.smkpsukaraja.sch.id/api/news/${id}`, {
         method: 'PUT',
         body: JSON.stringify(Object.fromEntries(formData)),
         headers: {
@@ -196,7 +196,7 @@ function deleteData(id) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/news/${id}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/news/${id}`, {
             method: "DELETE",
         })
             .then(response => response.json())

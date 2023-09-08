@@ -1,21 +1,63 @@
-function loadData() {
-    const nis = document.getElementById('nisInput').value;
-    loadSiswaAndNilai(nis);
+let currentNIS = null;
+
+function filterNama() {
+    const nama = document.getElementById('namaInput').value;
+    const loadingElement = document.getElementById('loading');
+    loadingElement.style.display = 'block';
+
+    // Fetch siswa data with similar names
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts`)
+        .then(response => response.json())
+        .then(data => {
+            const siswaInfo = document.getElementById('siswaInfo');
+
+            loadingElement.style.display = 'none';
+
+            const filteredSiswaList = data.data.filter(siswa => siswa.nama.toLowerCase().includes(nama.toLowerCase()));
+
+            if (filteredSiswaList.length > 0) {
+                const buttonsHTML = filteredSiswaList.map(siswa => {
+                    return `
+                    <div class="button-container" style="border-bottom: 1px solid #858796; padding-bottom: 10px;">
+                        <button class="btn btn-light" style="font-size: 12px;" onclick="loadSiswaAndNilai(${siswa.nis})">${siswa.nama}</button>
+                    </div>
+                    <br>
+                    `;
+                }).join('');
+                siswaInfo.innerHTML = buttonsHTML;
+            } else {
+                siswaInfo.innerHTML = "<p>Nama siswa tidak ditemukan.</p>";
+            }
+        })
+        .catch(error => {
+            loadingElement.style.display = 'none';
+
+            const siswaInfo = document.getElementById('siswaInfo');
+            siswaInfo.innerHTML = "<p>Error mencari data siswa.</p>";
+            console.error('Error fetching siswa data:', error);
+        });
 }
+
+// function loadData() {
+//     const nis = document.getElementById('nisInput').value;
+//     loadSiswaAndNilai(nis);
+// }
 
 // Event listener untuk submit formulir pencarian
 document.querySelector('#searchForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    loadData();
+    filterNama();
 });
 
 // Event listener untuk tombol cari
 document.querySelector('#searchForm button[type="submit"]').addEventListener('click', function (event) {
     event.preventDefault();
-    loadData();
+    filterNama();
 });
 
 function loadSiswaAndNilai(nis) {
+    currentNIS = nis;
+
     const siswaInfo = document.getElementById('siswaInfo');
     const nilaiInfo = document.getElementById('nilaiInfo');
 
@@ -24,7 +66,7 @@ function loadSiswaAndNilai(nis) {
     nilaiInfo.innerHTML = `<p class="text-center">Loading nilai...</p>`;
 
     // Fetch student biodata from a different API
-    fetch(`http://127.0.0.1:8000/api/posts/${nis}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts/${nis}`)
         .then(response => response.json())
         .then(data => {
             const siswaInfo = document.getElementById('siswaInfo');
@@ -68,7 +110,7 @@ function loadSiswaAndNilai(nis) {
         });
 
     // Fetch student grade data using the same NIS
-    fetch(`http://127.0.0.1:8000/api/nilai/${nis}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/nilai/${nis}`)
         .then(response => response.json())
         .then(data => {
             const nilaiPerSemester = {};
@@ -183,7 +225,7 @@ document.querySelector('#searchForm').addEventListener('submit', function (event
 
 // Fungsi untuk mengisi opsi kd_mapel dengan data dari API
 function fillMapelOptions() {
-    fetch(`http://localhost:8000/api/mapel`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/mapel`)
         .then(response => response.json())
         .then(data => {
             const kdMapelSelect = document.getElementById('kd_mapel');
@@ -210,7 +252,7 @@ function fillMapelOptions() {
 fillMapelOptions();
 
 function fillEditMapelOptions() {
-    fetch(`http://localhost:8000/api/mapel`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/mapel`)
         .then(response => response.json())
         .then(data => {
             const kdMapelSelect = document.getElementById('kd_mapel_edit');
@@ -241,7 +283,7 @@ function addData() {
     const addForm = document.getElementById('addForm');
     const formData = new FormData(addForm);
 
-    fetch("http://127.0.0.1:8000/api/nilai", {
+    fetch("https://api.smkpsukaraja.sch.id/api/nilai", {
         method: "POST",
         body: formData,
     })
@@ -253,7 +295,8 @@ function addData() {
         })
         .then(data => {
             if (data.success === true) {
-                loadData()
+                // loadData()
+                loadSiswaAndNilai(currentNIS);
 
                 $('#successMessage-add').modal('show');
 
@@ -284,7 +327,7 @@ function addData() {
 
 function prepareEditData(id) {
     // Mendapatkan data nilai berdasarkan ID dari API atau dari sumber data lainnya
-    fetch(`http://127.0.0.1:8000/api/nilai/${id}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/nilai/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {
@@ -313,7 +356,7 @@ function editData() {
     const editButton = document.getElementById('editDataButton');
     const id = editButton.getAttribute('data-id');
 
-    fetch(`http://127.0.0.1:8000/api/nilai/${id}`, {
+    fetch(`https://api.smkpsukaraja.sch.id/api/nilai/${id}`, {
         method: 'PUT',
         body: JSON.stringify(Object.fromEntries(formData)),
         headers: {
@@ -330,9 +373,9 @@ function editData() {
             if (data.success === true) {
                 console.log('Success:', data);
 
-                $('#successMessage-update').modal('show');
+                loadSiswaAndNilai(currentNIS);
 
-                loadData();
+                $('#successMessage-update').modal('show');
 
                 setTimeout(() => {
                     $('#editModal').modal('hide');
@@ -364,13 +407,13 @@ function deleteData(id) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/nilai/${id}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/nilai/${id}`, {
             method: "DELETE",
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success === true) {
-                    loadData();
+                    loadSiswaAndNilai(currentNIS);
 
                     $('#successMessage-delete').modal('show');
 

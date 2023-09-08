@@ -1,9 +1,20 @@
-let selectedKelas;
+let selectedKelas = null;
 
 function loadData() {
     selectedKelas = 'kelas_terpilih';
     loadJadwal(selectedKelas);
 }
+
+document.querySelector('#searchForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    loadData();
+});
+
+// Event listener untuk tombol cari
+document.querySelector('#searchForm button[type="submit"]').addEventListener('click', function (event) {
+    event.preventDefault();
+    loadData();
+});
 
 async function loadJadwal(selectedKelas) {
 
@@ -14,7 +25,7 @@ async function loadJadwal(selectedKelas) {
 
     try {
         // Fetch jadwal pelajaran berdasarkan kelas yang dipilih
-        const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${selectedKelas}`);
+        const response = await fetch(`https://api.smkpsukaraja.sch.id/api/jadwal/${selectedKelas}`);
         const data = await response.json();
 
         const jadwalPerHari = {};
@@ -142,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     // Fetch daftar kelas
     try {
-        const response = await fetch('http://127.0.0.1:8000/api/kelas');
+        const response = await fetch('https://api.smkpsukaraja.sch.id/api/kelas');
         const data = await response.json();
 
         if (data.success) {
@@ -169,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 function fillMapelOptions() {
-    fetch(`http://localhost:8000/api/mapel`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/mapel`)
         .then(response => response.json())
         .then(data => {
             const kdMapelSelect = document.getElementById('kd_mapel');
@@ -196,7 +207,7 @@ function fillMapelOptions() {
 fillMapelOptions();
 
 function fillEditMapelOptions() {
-    fetch(`http://localhost:8000/api/mapel`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/mapel`)
         .then(response => response.json())
         .then(data => {
             const kdMapelSelect = document.getElementById('kd_mapel_edit');
@@ -228,7 +239,7 @@ function addData() {
     const formData = new FormData(addForm);
     const modalBody = document.querySelector('.modal-body');
 
-    fetch("http://127.0.0.1:8000/api/jadwal", {
+    fetch("https://api.smkpsukaraja.sch.id/api/jadwal", {
         method: "POST",
         body: formData,
     })
@@ -273,7 +284,7 @@ function addData() {
 
 function prepareEditData(id) {
     // Mendapatkan data nilai berdasarkan ID dari API atau dari sumber data lainnya
-    fetch(`http://127.0.0.1:8000/api/jadwal/${id}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/jadwal/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {
@@ -305,7 +316,7 @@ function editData() {
     const editButton = document.getElementById('editDataButton');
     const id = editButton.getAttribute('data-id');
 
-    fetch(`http://127.0.0.1:8000/api/jadwal/${id}`, {
+    fetch(`https://api.smkpsukaraja.sch.id/api/jadwal/${id}`, {
         method: 'PUT',
         body: JSON.stringify(Object.fromEntries(formData)),
         headers: {
@@ -355,7 +366,7 @@ function editData() {
 function deleteData(id) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/jadwal/${id}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/jadwal/${id}`, {
             method: "DELETE",
         })
             .then(response => response.json())

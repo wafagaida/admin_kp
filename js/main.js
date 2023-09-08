@@ -1,35 +1,53 @@
-// Mendapatkan token dari localStorage
-const token = localStorage.getItem('token');
+// // Mendapatkan token dari localStorage
+// const token = localStorage.getItem('token');
 
-// Buat objek header HTTP dengan token
-const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`, // Menggunakan Bearer token jika sesuai dengan standar otentikasi
-};
+// // Buat objek header HTTP dengan token
+// const headers = {
+//     'Content-Type': 'application/json',
+//     'Authorization': `Bearer ${token}`, // Menggunakan Bearer token jika sesuai dengan standar otentikasi
+// };
 
-// Kemudian Anda bisa menggunakan objek header ini dalam permintaan HTTP Anda, contoh:
-fetch('http://127.0.0.1:8000/api/posts', {
-    method: 'GET',
-    headers: headers,
-})
-.then(response => {
-    // Lakukan sesuatu dengan respons dari permintaan
-})
-.catch(error => {
-    console.error('Terjadi kesalahan:', error);
+// // Kemudian Anda bisa menggunakan objek header ini dalam permintaan HTTP Anda, contoh:
+// fetch('https://api.smkpsukaraja.sch.id/api/posts', {
+//     method: 'GET',
+//     headers: headers,
+// })
+// .then(response => {
+//     // Lakukan sesuatu dengan respons dari permintaan
+// })
+// .catch(error => {
+//     console.error('Terjadi kesalahan:', error);
+// });
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Cek apakah pengguna sudah login (token ada di localStorage)
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        console.log('Berhasil Login')
+        // Pengguna sudah login, Anda dapat melakukan tindakan yang sesuai di sini.
+        // Misalnya, menampilkan pesan selamat datang atau mengambil data pengguna.
+        // Anda juga dapat mengirim token ke server untuk verifikasi sesi.
+
+        // Contoh: Menampilkan pesan selamat datang
+        // const welcomeMessage = document.getElementById('welcomeMessage');
+        // welcomeMessage.textContent = 'Selamat datang!';
+
+        // Anda juga dapat menambahkan tombol logout dan menghapus sesi saat pengguna logout.
+        // const logoutButton = document.getElementById('logoutButton');
+        // logoutButton.addEventListener('click', function () {
+            // logout();
+        // });
+    } else {
+        // Token tidak ada, pengguna belum login. Redirect ke halaman login.
+        window.location.href = 'login.html';
+    }
 });
-
 
 // Menghapus token atau informasi sesi
 function logout() {
-    // Hapus token dari localStorage atau sessionStorage
-    // localStorage.removeItem('token'); // Ubah 'token' sesuai dengan nama token yang Anda gunakan
-    // atau
-    // sessionStorage.removeItem('token');
-
-    // Arahkan pengguna ke halaman login
-    // window.location.href = 'login.html'; // Ganti 'login.html' sesuai dengan halaman login Anda
-    const url = 'http://127.0.0.1:8000/api/logout';
+    const url = 'https://api.smkpsukaraja.sch.id/api/logout';
+    const token = localStorage.getItem('token');
 
     try {
         fetch(url, {
@@ -48,7 +66,7 @@ function logout() {
             })
             .then(data => {
                 if (data.success === true) {
-                    localStorage.removeItem('token'); 
+                    localStorage.removeItem('token');
                     $('#successMessage').modal('show');
 
                     setTimeout(() => {

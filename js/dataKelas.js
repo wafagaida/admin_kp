@@ -27,7 +27,7 @@ function createTableRow(post, index) {
 
 function getPosts() {
     showLoading();
-    fetch('http://127.0.0.1:8000/api/kelas')
+    fetch('https://api.smkpsukaraja.sch.id/api/kelas')
         .then(response => response.json())
         .then(data => {
             hideLoading();
@@ -53,7 +53,7 @@ function addData() {
     const formData = new FormData(addForm);
     const modalBody = document.querySelector('.modal-body');
 
-    fetch("http://127.0.0.1:8000/api/kelas", {
+    fetch("https://api.smkpsukaraja.sch.id/api/kelas", {
         method: "POST",
         body: formData,
     })
@@ -101,7 +101,7 @@ function deleteData(id) {
     const modalBody = document.querySelector('.container-fluid');
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/kelas/${id}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/kelas/${id}`, {
             method: "DELETE",
         })
             .then(response => {

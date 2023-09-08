@@ -1,23 +1,59 @@
+let currentNIS = null;
 
-function loadData() {
-    const nis = document.getElementById('nisInput').value;
-    loadSiswaAndBayar(nis);
+function filterNama() {
+    const nama = document.getElementById('namaInput').value;
+    const loadingElement = document.getElementById('loading');
+    loadingElement.style.display = 'block';
+
+    // Fetch siswa data with similar names
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts`)
+        .then(response => response.json())
+        .then(data => {
+            const siswaInfo = document.getElementById('siswaInfo');
+
+            loadingElement.style.display = 'none';
+
+            const filteredSiswaList = data.data.filter(siswa => siswa.nama.toLowerCase().includes(nama.toLowerCase()));
+
+            if (filteredSiswaList.length > 0) {
+                const buttonsHTML = filteredSiswaList.map(siswa => {
+                    return `
+                    <div class="button-container" style="border-bottom: 1px solid #858796; padding-bottom: 10px;">
+                        <button class="btn btn-light" style="font-size: 12px;" onclick="loadSiswaAndBayar(${siswa.nis})">${siswa.nama}</button>
+                    </div>
+                    <br>
+                    `;
+                }).join('');
+                siswaInfo.innerHTML = buttonsHTML;
+            } else {
+                siswaInfo.innerHTML = "<p>Nama siswa tidak ditemukan.</p>";
+            }
+        })
+        .catch(error => {
+            loadingElement.style.display = 'none';
+
+            const siswaInfo = document.getElementById('siswaInfo');
+            siswaInfo.innerHTML = "<p>Error mencari data siswa.</p>";
+            console.error('Error fetching siswa data:', error);
+        });
 }
 
 // Event listener untuk submit formulir pencarian
 document.querySelector('#searchForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    loadData();
+    // loadData();
+    filterNama();
 });
 
 // Event listener untuk tombol cari
 document.querySelector('#searchForm button[type="submit"]').addEventListener('click', function (event) {
     event.preventDefault();
-    loadData();
+    // loadData();
+    filterNama();
 });
 
 function loadSiswaAndBayar(nis) {
-
+    currentNIS = nis;
 
     const siswaInfo = document.getElementById('siswaInfo');
     const tagihanInfo = document.getElementById('tagihanInfo');
@@ -27,7 +63,7 @@ function loadSiswaAndBayar(nis) {
     tagihanInfo.innerHTML = `<p class="text-center">Loading data pembayaran...</p>`;
 
     // Fetch student biodata from a different API
-    fetch(`http://127.0.0.1:8000/api/posts/${nis}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/posts/${nis}`)
         .then(response => response.json())
         .then(data => {
             const siswaInfo = document.getElementById('siswaInfo');
@@ -71,7 +107,7 @@ function loadSiswaAndBayar(nis) {
         });
 
     // Fetch student grade data using the same NIS
-    fetch(`http://127.0.0.1:8000/api/bayar/${nis}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/bayar/${nis}`)
         .then(response => response.json())
         .then(data => {
             const bayarPerSemester = {};
@@ -125,7 +161,7 @@ function loadSiswaAndBayar(nis) {
                                                         <td>${formatCurrency(d.nominal)}</td>
                                                         <td>${d.jumlah_bayar !== null ? formatCurrency(d.jumlah_bayar) : '-'}</td>
                                                         <td>${d.tgl_bayar !== null ? d.tgl_bayar : '-'}</td>
-                                                        <td>${d.ket !== null ? d.ket : '-'}</td>
+                                                        <td>${d.ket !== null ? `${d.ket} (${formatCurrency(d.nominal - d.jumlah_bayar)})` : '-'}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="prepareEditData(${d.id})" data-id="${d.id}">
                                                                 <span class="icon text-white">
@@ -173,7 +209,7 @@ function loadSiswaAndBayar(nis) {
             }
         })
         .catch(error => {
-            tagihanInfo.innerHTML = "<p>Error fetching grade data.</p>";
+            tagihanInfo.innerHTML = "<p>Error fetching tagihan data.</p>";
             console.error('Error fetching grade data:', error);
         });
 };
@@ -196,7 +232,7 @@ function addData() {
     const addForm = document.getElementById('addForm');
     const formData = new FormData(addForm);
 
-    fetch("http://127.0.0.1:8000/api/bayar", {
+    fetch("https://api.smkpsukaraja.sch.id/api/bayar", {
         method: "POST",
         body: formData,
     })
@@ -208,7 +244,8 @@ function addData() {
         })
         .then(data => {
             if (data.success === true) {
-                loadData()
+                // loadData()
+                loadSiswaAndBayar(currentNIS);
 
                 $('#successMessage-add').modal('show');
 
@@ -239,7 +276,7 @@ function addData() {
 
 function prepareEditData(id) {
     // Mendapatkan data nilai berdasarkan ID dari API atau dari sumber data lainnya
-    fetch(`http://127.0.0.1:8000/api/bayar/${id}`)
+    fetch(`https://api.smkpsukaraja.sch.id/api/bayar/${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {
@@ -272,7 +309,7 @@ function editData() {
     const editButton = document.getElementById('editDataButton');
     const id = editButton.getAttribute('data-id');
 
-    fetch(`http://127.0.0.1:8000/api/bayar/${id}`, {
+    fetch(`https://api.smkpsukaraja.sch.id/api/bayar/${id}`, {
         method: 'PUT',
         body: JSON.stringify(Object.fromEntries(formData)),
         headers: {
@@ -291,7 +328,8 @@ function editData() {
 
                 $('#successMessage-update').modal('show');
 
-                loadData();
+                // loadData();
+                loadSiswaAndBayar(currentNIS);
 
                 setTimeout(() => {
                     $('#editModal').modal('hide');
@@ -323,13 +361,14 @@ function deleteData(id) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/bayar/${id}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/bayar/${id}`, {
             method: "DELETE",
         })
             .then(response => response.json())
             .then(data => {
                 if (data.success === true) {
-                    loadData();
+                    // loadData();
+                    loadSiswaAndBayar(currentNIS);
 
                     $('#successMessage-delete').modal('show');
 

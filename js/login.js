@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const password = document.getElementById('password').value;
 
         // Ganti URL berikut dengan URL backend otentikasi Anda
-        const url = 'http://127.0.0.1:8000/api/login';
+        const url = 'https://api.smkpsukaraja.sch.id/api/login';
 
         try {
             fetch(url, {

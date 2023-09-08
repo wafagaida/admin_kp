@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Admin Sukaraja - Nilai Siswa</title>
+    <title>SIRAJA - Nilai Siswa</title>
 
     <!-- Custom fonts for this template -->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -50,9 +50,9 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                 <div class="sidebar-brand-icon">
-                    <img class="col-sm" src="img/logoSMK.png">
+                    <img class="col-sm-9" src="img/logoSMK.png">
                 </div>
-                <div class="sidebar-brand-text mx-3">SISPS Sukaraja</div>
+                <div class="sidebar-brand-text mx-3">SIRAJA</div>
             </a>
 
             <!-- Divider -->
@@ -144,7 +144,7 @@
                     <form id="searchForm" class="inline-block form-inline ">
                         <div class="form-group">
                             <div>
-                                <input type="text" id="nisInput" placeholder="Masukkan NIS" class="form-control">
+                                <input type="text" id="namaInput" placeholder="Masukkan Nama" class="form-control">
                             </div>
                             <div class="col-sm">
                                 <button type="submit" class="btn btn-sukaraja btn-icon-split btn-sm" name="cari"
@@ -157,6 +157,10 @@
                         </div>
                     </form>
                     <br>
+
+                    <div id="loading" class="text-center" style="display: none;">
+                        <img src="loading.gif" alt="Loading...">
+                    </div>
 
                     <div id="siswaInfo"></div>
                     <div id="nilaiInfo"></div>

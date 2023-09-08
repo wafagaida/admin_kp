@@ -26,7 +26,7 @@ function createTableRow(post, index) {
 
 function getPosts() {
     showLoading();
-    fetch('http://127.0.0.1:8000/api/mapel')
+    fetch('https://api.smkpsukaraja.sch.id/api/mapel')
         .then(response => response.json())
         .then(data => {
             hideLoading();
@@ -52,7 +52,7 @@ function addData() {
     const formData = new FormData(addForm);
     const modalBody = document.querySelector('.modal-body');
 
-    fetch("http://127.0.0.1:8000/api/mapel", {
+    fetch("https://api.smkpsukaraja.sch.id/api/mapel", {
         method: "POST",
         body: formData,
     })
@@ -100,7 +100,7 @@ function deleteData(kd_mapel) {
     const modalBody = document.querySelector('.container-fluid');
 
     if (confirmation) {
-        fetch(`http://127.0.0.1:8000/api/mapel/${kd_mapel}`, {
+        fetch(`https://api.smkpsukaraja.sch.id/api/mapel/${kd_mapel}`, {
             method: "DELETE",
         })
             .then(response => {
