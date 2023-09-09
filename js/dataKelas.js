@@ -1,3 +1,62 @@
+const token = localStorage.getItem('token');
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (token) {
+        console.log('Berhasil Login');
+        // fetchUserData(token);
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+function logout() {
+    const url = 'https://api.smkpsukaraja.sch.id/api/logout';
+
+    try {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            // body: JSON.stringify({ username, password }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.url}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success === true) {
+                    localStorage.removeItem('token');
+                    $('#successMessage').modal('show');
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                        $('#successMessage').modal('hide');
+                    }, 1200);
+                } else {
+                    $('#errorMessage').modal('show');
+
+                    setTimeout(() => {
+                        $('#errorMessage').modal('hide');
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error("Error logout data:", error);
+                $('#errorMessage').modal('show');
+
+                setTimeout(() => {
+                    $('#errorMessage').modal('hide');
+                }, 3000);
+            });
+    } catch (error) {
+        console.error('Terjadi kesalahan:', error);
+        alert('Terjadi kesalahan saat melakukan logout.');
+    }
+}
 function showLoading() {
     document.getElementById('loading').style.display = 'block';
 }

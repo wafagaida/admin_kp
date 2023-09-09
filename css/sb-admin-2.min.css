@@ -11372,6 +11372,39 @@ a:focus {
     border-bottom: .25rem solid #5a5c69 !important
 }
 
+.border-left-purple {
+    border-left: .25rem solid #BBB2CC !important
+}
+
+.border-bottom-purple {
+    border-bottom: .25rem solid #BBB2CC !important
+}
+
+.border-left-jambu {
+    border-left: .25rem solid #CB9CA3 !important
+}
+
+.border-bottom-jambu {
+    border-bottom: .25rem solid #CB9CA3 !important
+}
+
+.border-left-ijo {
+    border-left: .25rem solid #B0BBBC !important
+}
+
+.border-bottom-ijo {
+    border-bottom: .25rem solid #B0BBBC !important
+}
+
+.border-left-kuning {
+    border-left: .25rem solid #E4B875 !important
+}
+
+.border-bottom-kuning {
+    border-bottom: .25rem solid #E4B875 !important
+}
+
+
 .progress-sm {
     height: .5rem
 }
@@ -11811,8 +11844,8 @@ a:focus {
         display: block;
         width: 100%;
         text-align: left;
-        padding: 1rem;
-        width: 14rem
+        /* padding: 1rem;
+        width: 14rem */
     }
 
     .sidebar .nav-item .nav-link i {

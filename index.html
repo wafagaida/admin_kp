@@ -22,6 +22,12 @@
 
     <script src="js/main.js"></script>
 
+    <style>
+        body {
+            color: #3a3b45;
+        }
+    </style>
+
 </head>
 
 <body id="page-top">
@@ -30,12 +36,12 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-sukaraja sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-sukaraja sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                 <div class="sidebar-brand-icon">
-                    <img class="col-sm-9" src="img/logoSMK.png">
+                    <img class="col-sm" src="img/logoSMK.png">
                 </div>
                 <div class="sidebar-brand-text mx-3">SIRAJA</div>
             </a>
@@ -46,7 +52,7 @@
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
                 <a class="nav-link" href="index.html">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-fw fa-home"></i>
                     <span>Dashboard</span></a>
             </li>
 
@@ -64,12 +70,6 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="hal_news.html">
-                    <i class="fas fa-bell fa"></i>
-                    <span>Pengumuman</span></a>
-            </li>
-
-            <li class="nav-item">
                 <a class="nav-link" href="siswa_nilai.html">
                     <i class="fas fa-clipboard-list fa"></i>
                     <span>Penilaian</span></a>
@@ -79,6 +79,18 @@
                 <a class="nav-link" href="siswa_jadwal.html">
                     <i class="fas fa-calendar fa"></i>
                     <span>Jadwal Pelajaran</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="hal_mapel.html">
+                    <i class="fas fa-book fa"></i>
+                    <span>Mata Pelajaran</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="hal_kelas.html">
+                    <i class="fas fa-list fa"></i>
+                    <span>Kelas</span></a>
             </li>
 
             <hr class="sidebar-divider">
@@ -91,6 +103,18 @@
                 <a class="nav-link" href="siswa_bayar.html">
                     <i class="fas fa-donate fa"></i>
                     <span>Pembayaran</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                INFORMASI
+            </div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="hal_news.html">
+                    <i class="fas fa-bell fa"></i>
+                    <span>Pengumuman</span></a>
             </li>
 
             <hr class="sidebar-divider">
@@ -118,7 +142,7 @@
                     </button>
 
                     <!-- Topbar Search -->
-                    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+                    <h1 class="h4 mb-0">Dashboard</h1>
 
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -127,14 +151,14 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-900 small" id="namaUser">Admin</span>
                                 <img class="img-profile rounded-circle" src="img/user.png">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
                                     Logout
                                 </a>
                             </div>
@@ -172,31 +196,8 @@
                         </div>
 
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <a href="hal_news.html" class="card-link">
-                                <div class="card border-left-info shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col-auto">
-                                                        <div class="h mb-0 mr-3 font-weight-bold text-gray-800">
-                                                            PENGUMUMAN</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-bell fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
                             <a href="siswa_nilai.html" class="card-link">
-                                <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card border-left-kuning shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
@@ -213,10 +214,9 @@
                             </a>
                         </div>
 
-                        <!-- Earnings (Monthly) Card Example -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <a href="siswa_jadwal.html" class="card-link">
-                                <div class="card border-left-dark shadow h-100 py-2">
+                                <div class="card border-left-info shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
@@ -236,11 +236,42 @@
                             </a>
                         </div>
 
-                        <!-- Pending Requests Card Example -->
-
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <a href="hal_mapel.html" class="card-link">
+                                <div class="card border-left-ijo shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="h6 mb-0 font-weight-bold text-gray-800">MATA PELAJARAN</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-book fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="row">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <a href="hal_kelas.html" class="card-link">
+                                <div class="card border-left-purple shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="h6 font-weight-bold text-gray-800 text-uppercase mb-1">
+                                                    Kelas</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-list fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
 
                         <div class="col-xl-3 col-md-6 mb-4">
                             <a href="siswa_bayar.html" class="card-link">
@@ -259,36 +290,21 @@
                             </a>
                         </div>
 
-
-
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <a href="hal_kelas.html" class="card-link">
-                                <div class="card border-left-sukaraja shadow h-100 py-2">
+                            <a href="hal_news.html" class="card-link">
+                                <div class="card border-left-secondary shadow h-100 py-2">
                                     <div class="card-body">
                                         <div class="row no-gutters align-items-center">
                                             <div class="col mr-2">
-                                                <div class="h6 font-weight-bold text-gray-800 text-uppercase mb-1">
-                                                    Kelas</div>
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col-auto">
+                                                        <div class="h mb-0 mr-3 font-weight-bold text-gray-800">
+                                                            PENGUMUMAN</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="col-auto">
-                                                <i class="fas fa-list fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <a href="hal_mapel.html" class="card-link">
-                                <div class="card border-left-info shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="h6 mb-0 font-weight-bold text-gray-800">MATA PELAJARAN</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fas fa-book fa-2x text-gray-300"></i>
+                                                <i class="fas fa-bell fa-2x text-gray-300"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -309,7 +325,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Sistem Informasi Siswa SMK Plus Sukaraja 2023</span>
+                        <span>Copyright &copy; 2023 SIRAJA</span>
                     </div>
                 </div>
             </footer>

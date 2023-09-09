@@ -1,53 +1,16 @@
-// // Mendapatkan token dari localStorage
-// const token = localStorage.getItem('token');
-
-// // Buat objek header HTTP dengan token
-// const headers = {
-//     'Content-Type': 'application/json',
-//     'Authorization': `Bearer ${token}`, // Menggunakan Bearer token jika sesuai dengan standar otentikasi
-// };
-
-// // Kemudian Anda bisa menggunakan objek header ini dalam permintaan HTTP Anda, contoh:
-// fetch('https://api.smkpsukaraja.sch.id/api/posts', {
-//     method: 'GET',
-//     headers: headers,
-// })
-// .then(response => {
-//     // Lakukan sesuatu dengan respons dari permintaan
-// })
-// .catch(error => {
-//     console.error('Terjadi kesalahan:', error);
-// });
+const token = localStorage.getItem('token');
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Cek apakah pengguna sudah login (token ada di localStorage)
-    const token = localStorage.getItem('token');
-
     if (token) {
-        console.log('Berhasil Login')
-        // Pengguna sudah login, Anda dapat melakukan tindakan yang sesuai di sini.
-        // Misalnya, menampilkan pesan selamat datang atau mengambil data pengguna.
-        // Anda juga dapat mengirim token ke server untuk verifikasi sesi.
-
-        // Contoh: Menampilkan pesan selamat datang
-        // const welcomeMessage = document.getElementById('welcomeMessage');
-        // welcomeMessage.textContent = 'Selamat datang!';
-
-        // Anda juga dapat menambahkan tombol logout dan menghapus sesi saat pengguna logout.
-        // const logoutButton = document.getElementById('logoutButton');
-        // logoutButton.addEventListener('click', function () {
-            // logout();
-        // });
+        console.log('Berhasil Login');
+        // fetchUserData(token);
     } else {
-        // Token tidak ada, pengguna belum login. Redirect ke halaman login.
         window.location.href = 'login.html';
     }
 });
 
-// Menghapus token atau informasi sesi
 function logout() {
     const url = 'https://api.smkpsukaraja.sch.id/api/logout';
-    const token = localStorage.getItem('token');
 
     try {
         fetch(url, {
@@ -94,3 +57,32 @@ function logout() {
         alert('Terjadi kesalahan saat melakukan logout.');
     }
 }
+
+// function fetchUserData(token) {
+//     const url = 'https://api.smkpsukaraja.sch.id/api/posts'; // Replace with the correct API endpoint for user data
+
+//     fetch(url, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${token}`,
+//         },
+//     })
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! Status: ${response.url}`);
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             console.log(data);
+//             if (data.success === true) {
+//                 const userNameElement = document.getElementById('namaUser')
+//                 userNameElement.textContent = data.nama;
+//             } else {
+//                 console.error("Error menampilkan data:", error);
+//             }
+//         })
+//         .catch(error => {
+//             console.error("Error fetching user data:", error);
+//         });
+// }

@@ -1,20 +1,69 @@
 let selectedKelas = null;
 
-function loadData() {
-    selectedKelas = 'kelas_terpilih';
-    loadJadwal(selectedKelas);
+const token = localStorage.getItem('token');
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (token) {
+        console.log('Berhasil Login');
+        // fetchUserData(token);
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+function logout() {
+    const url = 'https://api.smkpsukaraja.sch.id/api/logout';
+
+    try {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            // body: JSON.stringify({ username, password }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.url}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success === true) {
+                    localStorage.removeItem('token');
+                    $('#successMessage').modal('show');
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                        $('#successMessage').modal('hide');
+                    }, 1200);
+                } else {
+                    $('#errorMessage').modal('show');
+
+                    setTimeout(() => {
+                        $('#errorMessage').modal('hide');
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                console.error("Error logout data:", error);
+                $('#errorMessage').modal('show');
+
+                setTimeout(() => {
+                    $('#errorMessage').modal('hide');
+                }, 3000);
+            });
+    } catch (error) {
+        console.error('Terjadi kesalahan:', error);
+        alert('Terjadi kesalahan saat melakukan logout.');
+    }
 }
 
-document.querySelector('#searchForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-    loadData();
-});
-
-// Event listener untuk tombol cari
-document.querySelector('#searchForm button[type="submit"]').addEventListener('click', function (event) {
-    event.preventDefault();
-    loadData();
-});
+function loadData() {
+    // selectedKelas = 'kelas_terpilih';
+    loadJadwal(selectedKelas);
+}
 
 async function loadJadwal(selectedKelas) {
 
@@ -142,8 +191,8 @@ async function loadJadwal(selectedKelas) {
             `;
         }
     } catch (error) {
-        nilaiInfo.innerHTML = "<p>Error fetching data.</p>";
-        console.error('Error fetching data:', error);
+        nilaiInfo.innerHTML = "<p>Tidak Bisa Terhubung ke Internet.</p>";
+        console.error('Tidak Bisa Terhubung ke Internet:', error);
     }
 }
 
@@ -168,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.error('Failed to fetch class data.');
         }
     } catch (error) {
-        console.error('Error fetching class data:', error);
+        console.error('Tidak Bisa Terhubung ke Internet:', error);
     }
 
     // Event listener when form is submitted
@@ -200,7 +249,7 @@ function fillMapelOptions() {
             }
         })
         .catch(error => {
-            console.error('Error fetching mata pelajaran:', error);
+            console.error('Tidak Bisa Terhubung ke Internet:', error);
         });
 }
 
@@ -227,7 +276,7 @@ function fillEditMapelOptions() {
             }
         })
         .catch(error => {
-            console.error('Error fetching mata pelajaran:', error);
+            console.error('Tidak Bisa Terhubung ke Internet:', error);
         });
 }
 
@@ -253,7 +302,8 @@ function addData() {
             if (data.success === true) {
                 // loadJadwal(selectedKelas);
                 selectedKelas = formData.get('kd_kelas');
-                loadData();
+                // loadData();
+                loadJadwal(selectedKelas)
 
                 $('#successMessage-add').modal('show');
 
@@ -335,7 +385,8 @@ function editData() {
 
                 $('#successMessage-update').modal('show');
 
-                loadData();
+                // loadData();
+                loadJadwal(selectedKelas)
 
                 setTimeout(() => {
                     $('#editModal').modal('hide');
@@ -372,7 +423,8 @@ function deleteData(id) {
             .then(response => response.json())
             .then(data => {
                 if (data.success === true) {
-                    loadData();
+                    // loadData();
+                    loadJadwal(selectedKelas)
 
                     $('#successMessage-delete').modal('show');
 
