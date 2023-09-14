@@ -73,6 +73,7 @@ function createTableRow(post, index) {
             <td>${post.kd_mapel}</td>
             <td>${post.nama_mapel}</td>
             <td>${post.nama_guru}</td>
+            <td>${post.kkm}</td>
             <td>
                 <button type="button" class="btn btn-danger btn-icon-split btn-sm" onclick="deleteData('${post.kd_mapel}')">
                     <span class="icon text-white">
@@ -110,7 +111,6 @@ function getPosts() {
 function addData() {
     const addForm = document.getElementById('addForm');
     const formData = new FormData(addForm);
-    const modalBody = document.querySelector('.modal-body');
 
     fetch("https://api.smkpsukaraja.sch.id/api/mapel", {
         method: "POST",
@@ -157,7 +157,6 @@ function addData() {
 
 function deleteData(kd_mapel) {
     const confirmation = confirm("Apakah anda yakin ingin menghapus data ini?");
-    const modalBody = document.querySelector('.container-fluid');
 
     if (confirmation) {
         fetch(`https://api.smkpsukaraja.sch.id/api/mapel/${kd_mapel}`, {

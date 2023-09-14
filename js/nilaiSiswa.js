@@ -219,7 +219,8 @@ function loadSiswaAndNilai(nis) {
                                                 <td>${d.mapel.nama_mapel}</td>
                                                 <td>${d.mapel.nama_guru}</td>
                                                 <td>${d.mapel.kkm}</td>
-                                                <td>${d.nilai !== null ? d.nilai : '-'}</td>
+                                                <td style="color: ${d.nilai !== null && d.nilai < d.mapel.kkm ? 'red' : 'black'}">
+                                                ${d.nilai !== null ? d.nilai : '-'}</td>
                                                 <td>
                                                     <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="prepareEditData(${d.id})" data-id="${d.id}">
                                                         <span class="icon text-white">

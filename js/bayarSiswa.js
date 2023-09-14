@@ -59,6 +59,41 @@ function logout() {
     }
 }
 
+function formatDate(dateString) {
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        const year = parts[0];
+        const month = parts[1];
+        const day = parts[2];
+        return `${day}-${month}-${year}`;
+    } else {
+        return dateString; // Jika format tidak sesuai, kembalikan tanggal yang sama
+    }
+}
+
+function formatMonth(dateString) {
+    const [year, month] = dateString.split('-');
+    const monthNames = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    if (month >= 1 && month <= 12) {
+        const monthName = monthNames[parseInt(month) - 1];
+        return `${monthName}-${year}`;
+    } else {
+        return dateString; // Jika format tidak sesuai, kembalikan tanggal yang sama
+    }
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+}
+
+function removeDecimal(amount) {
+    return amount.replace(/,00$/, '');
+}
+
 function filterNama() {
     const nama = document.getElementById('namaInput').value;
     const loadingElement = document.getElementById('loading');
@@ -216,11 +251,14 @@ function loadSiswaAndBayar(nis) {
                                                     <tr>
                                                         <td>${index + 1}</td>
                                                         <td>${d.nama_bayar}</td>
-                                                        <td>${d.bulan}</td>
-                                                        <td>${formatCurrency(d.nominal)}</td>
-                                                        <td>${d.jumlah_bayar !== null ? formatCurrency(d.jumlah_bayar) : '-'}</td>
-                                                        <td>${d.tgl_bayar !== null ? d.tgl_bayar : '-'}</td>
-                                                        <td>${d.ket !== null ? `${d.ket} (${formatCurrency(d.nominal - d.jumlah_bayar)})` : '-'}</td>
+                                                        <td>${formatMonth(d.bulan)}</td>
+                                                        <td>${removeDecimal(formatCurrency(d.nominal))}</td>
+                                                        <td style="color: ${d.jumlah_bayar !== null && d.jumlah_bayar < d.nominal ? 'red' : 'black'}">
+                                                        ${d.jumlah_bayar !== null ? removeDecimal(formatCurrency(d.jumlah_bayar)) : '-'}</td>
+                                                        <td>${d.tgl_bayar !== null ? formatDate(d.tgl_bayar) : '-'}</td>
+                                                        <td style="color: ${d.ket !== null && d.jumlah_bayar < d.nominal ? 'red' : 'inherit'}">
+                                                        ${d.ket !== null ? `${d.ket} (${removeDecimal(formatCurrency(d.nominal - d.jumlah_bayar))})` : '-'}
+                                                        </td>
                                                         <td>
                                                             <button type="button" class="btn btn-success btn-icon-split btn-sm" data-toggle="modal" data-target="#editModal" onclick="prepareEditData(${d.id})" data-id="${d.id}">
                                                                 <span class="icon text-white">
@@ -281,11 +319,6 @@ document.querySelector('#searchForm').addEventListener('submit', function (event
     loadSiswaAndBayar(nis);
 
 });
-
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
-}
-
 
 function addData() {
     const addForm = document.getElementById('addForm');
